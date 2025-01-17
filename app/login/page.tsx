@@ -9,7 +9,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
-  const [_, formAction, isPending] = useActionState(login, null);
+  const [, formAction, isPending] = useActionState(login, null);
 
   return (
     <div>
@@ -24,7 +24,7 @@ export default function LoginPage() {
           {isPending ? "Logging in" : "Login"}
         </Button>
         <p className="text-sm text-muted-foreground">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="signup" className="text-foreground underline">
             Sign Up
           </Link>

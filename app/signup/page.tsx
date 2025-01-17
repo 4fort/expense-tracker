@@ -9,7 +9,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
-  const [_, formAction, isPending] = useActionState(signup, null);
+  const [, formAction, isPending] = useActionState(signup, null);
 
   return (
     <div>

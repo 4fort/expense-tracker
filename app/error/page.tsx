@@ -1,7 +1,5 @@
 "use server";
 
-import { NextRequest } from "next/server";
-
 export default async function ErrorPage({
   searchParams,
 }: {
