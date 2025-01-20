@@ -2,8 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
+import { cn } from "@/lib/utils";
 
-const SignOutButton = () => {
+type Props = {
+  className?: string;
+};
+
+const SignOutButton = ({ className }: Props) => {
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -19,7 +24,11 @@ const SignOutButton = () => {
     }
   };
 
-  return <Button onClick={handleSignOut}>Sign Out</Button>;
+  return (
+    <Button className={cn(className)} onClick={handleSignOut}>
+      Log Out
+    </Button>
+  );
 };
 
 export default SignOutButton;
