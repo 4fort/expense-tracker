@@ -18,7 +18,7 @@ const LabelInput = React.forwardRef<
       <div className="flex flex-col relative text-sm">
         <LabelPrimitive.Root
           className={cn(
-            "absolute left-4 top-1 select-none text-xs font-semibold",
+            "absolute left-4 top-1.5 select-none text-xs font-semibold",
             labelClassName
           )}
           htmlFor={name}
@@ -31,7 +31,7 @@ const LabelInput = React.forwardRef<
           type={type}
           ref={ref}
           className={cn(
-            "px-4 pt-5 pb-2 bg-black/10 rounded-xl placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm transition-all",
+            "px-4 pt-6 pb-2 bg-black/10 rounded-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm transition-all",
             className
           )}
           {...props}

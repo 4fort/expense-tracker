@@ -1,0 +1,116 @@
+"use client";
+
+import { cn } from "@/lib/utils";
+import { Home, User2, WalletCards } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
+
+const navLinks = [
+  {
+    icon: [<Home key={0} />, <Home stroke="#d4d4d8" key={1} />],
+    text: "Home",
+    href: "/",
+  },
+  {
+    icon: [<WalletCards key={0} />, <WalletCards stroke="#d4d4d8" key={1} />],
+    text: "Savings",
+    href: "/savings",
+  },
+  {
+    icon: [<User2 key={0} />, <User2 stroke="#d4d4d8" key={1} />],
+    text: "Profile",
+    href: "/profile",
+  },
+];
+
+export const NavBar = () => {
+  useEffect(() => {
+    const disableContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+    };
+
+    window.addEventListener("contextmenu", disableContextMenu);
+
+    return () => {
+      window.removeEventListener("contextmenu", disableContextMenu);
+    };
+  }, []);
+
+  return (
+    <nav className="w-11/12 mx-auto bg-zinc-800/20 fixed bottom-0 left-0 right-0 p-2 mb-4 rounded-full">
+      <NavLinks />
+    </nav>
+  );
+};
+
+const NavLinks = () => {
+  const [geometry, setGeometry] = useState({
+    left: 0,
+    width: 0,
+  });
+
+  return (
+    <ul className="flex justify-around text-zinc-500 relative">
+      <motion.li
+        layoutId="nav-underline"
+        animate={{ ...geometry }}
+        className="absolute h-full w-32 rounded-full bg-zinc-500 -z-10"
+      />
+      {navLinks.map(({ icon, text, href }, i) => (
+        <NavSingleLink
+          key={i}
+          icon={icon}
+          text={text}
+          href={href}
+          setGeometry={setGeometry}
+        />
+      ))}
+    </ul>
+  );
+};
+
+const NavSingleLink = ({
+  icon,
+  text,
+  href,
+  setGeometry,
+}: (typeof navLinks)[0] & {
+  setGeometry: React.Dispatch<
+    React.SetStateAction<{ left: number; width: number }>
+  >;
+}) => {
+  const pathname = usePathname();
+  const element = useRef<HTMLLIElement>(null);
+  const isActive = pathname === href;
+
+  useEffect(() => {
+    if (pathname.startsWith(href) && element.current) {
+      const { width } = element.current.getBoundingClientRect();
+
+      return setGeometry({
+        left: element.current.offsetLeft,
+        width,
+      });
+    }
+  }, [pathname]);
+
+  return (
+    <motion.li
+      ref={element}
+      className="flex flex-col items-center justify-center flex-grow py-1 active:scale-90 transition-all origin-center"
+    >
+      <Link
+        href={href}
+        className={cn(
+          "flex flex-col items-center justify-center w-10/12",
+          isActive ? "text-zinc-900" : ""
+        )}
+      >
+        {isActive ? icon[1] : icon[0]}
+        <span className={cn("text-xs", isActive && "text-white")}>{text}</span>
+      </Link>
+    </motion.li>
+  );
+};
