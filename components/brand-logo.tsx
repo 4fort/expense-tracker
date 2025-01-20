@@ -1,8 +1,8 @@
 const BrandLogo = () => {
   return (
     <div>
-      <p className="font-extrabold text-zinc-500">
-        for<span className="text-zinc-800">tracker</span>
+      <p className="font-extrabold text-primary/60">
+        for<span className="text-primary">tracker</span>
       </p>
     </div>
   );
