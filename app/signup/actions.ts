@@ -4,12 +4,15 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/utils/supabase/server";
+import { TUserData } from "@/types/TUserData";
 
-export async function signup(currentState: void | null, formData: FormData) {
+export async function signup(
+  currentState: TUserData | null,
+  formData: FormData
+): Promise<TUserData | null> {
   const supabase = await createClient();
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
+  // Extract form data with type-casting (ensure these fields exist in the form)
   const final_data = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
@@ -19,17 +22,19 @@ export async function signup(currentState: void | null, formData: FormData) {
     last_name: formData.get("last_name") as string,
   };
 
-  const { error, data } = await supabase.auth.signUp({
+  // Sign up the user with Supabase Auth
+  const { error: authError, data: user_auth } = await supabase.auth.signUp({
     email: final_data.email,
     password: final_data.password,
   });
 
-  if (error) {
-    redirect("/error");
+  // Handle errors or null user
+  if (authError || !user_auth?.user) {
+    console.error("Signup failed:", authError?.message);
+    return null;
   }
 
-  console.log(data, error);
-
+  const authId = user_auth.user.id; // Auth user ID
   const personal_data = {
     first_name: final_data.first_name,
     middle_name: final_data.middle_name,
@@ -37,21 +42,42 @@ export async function signup(currentState: void | null, formData: FormData) {
     username: final_data.username,
   };
 
-  console.log(personal_data, data.user?.id);
-
-  const { error: personalError } = await supabase
+  // Update user data in the "users" table
+  const { error: personalError, data: updatedUser } = await supabase
     .from("users")
     .update(personal_data)
-    .eq("auth_id", data.user?.id);
+    .eq("auth_id", authId)
+    .select("*")
+    .single(); // Use `select("*")` and `single()` to fetch the updated row
 
-  console.log(personalError);
+  const userId = updatedUser?.id;
 
-  if (personalError) {
-    redirect("/error");
+  if (personalError || !updatedUser) {
+    console.error("Failed to update personal data:", personalError?.message);
+    return {
+      id: userId,
+      email: user_auth.user.email,
+      first_name: "",
+      middle_name: "",
+      last_name: "",
+      username: "",
+    };
   }
 
-  revalidatePath("/", "layout");
-  redirect("/");
+  // Revalidate any necessary paths
+  revalidatePath("/");
+
+  // Construct and return the final user object
+  const user: TUserData = {
+    id: userId,
+    email: user_auth.user.email,
+    first_name: updatedUser.first_name,
+    middle_name: updatedUser.middle_name,
+    last_name: updatedUser.last_name,
+    username: updatedUser.username,
+  };
+
+  return user;
 }
 
 export async function validateEmail(

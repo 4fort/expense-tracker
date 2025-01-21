@@ -2,15 +2,40 @@
 
 import { login } from "./actions";
 import { Button } from "@/components/ui/button";
-import React, { useActionState } from "react";
+import React, { useActionState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import BrandLogo from "@/components/brand-logo";
 import LabelInput from "@/components/label-input";
 import Main from "@/components/main";
+import { TUserData } from "@/types/TUserData";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function LoginPage() {
-  const [, formAction, isPending] = useActionState(login, null);
+  const router = useRouter();
+  const { setUser } = useAuthStore();
+  const [state, formAction, isPending] = useActionState<
+    TUserData | null,
+    FormData
+  >(login, null);
+
+  useEffect(() => {
+    if (state) {
+      const data: TUserData = {
+        id: state.id,
+        first_name: state.first_name,
+        middle_name: state.middle_name,
+        last_name: state.last_name,
+        email: state.email,
+        username: state.username,
+      };
+      setUser(data);
+      return router.push("/");
+    } else {
+      return router.push("/error");
+    }
+  }, [state, isPending]);
 
   return (
     <React.Fragment>

@@ -1,16 +1,25 @@
+"use client";
+
 import Main from "@/components/main";
 import { NavBar } from "@/components/nav-bar";
 import SignOutButton from "@/components/sign-out-button";
 import TitleHeader from "@/components/title-header";
 import { Separator } from "@/components/ui/separator";
 import { TUserData } from "@/types/TUserData";
-import React from "react";
+import React, { useEffect } from "react";
 import { MenuItems } from "./_components/menu-items";
-import { useUserData } from "@/hooks/useUserData";
 import Loading from "@/components/loading";
+import { useAuthStore } from "@/store/useAuthStore";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export default async function ProfilePage() {
-  const { user } = await useUserData();
+export default function ProfilePage() {
+  const { user, revalidate, isAuthorized } = useAuthStore();
+
+  useEffect(() => {
+    if (!user && isAuthorized) {
+      revalidate();
+    }
+  }, [user]);
 
   return (
     <React.Fragment>
@@ -35,21 +44,29 @@ export default async function ProfilePage() {
 }
 
 const ProfileSummary = ({ user }: { user: TUserData }) => {
-  const fullName = `${user?.first_name} ${user?.last_name}`;
+  const fullName = `${user.first_name} ${user.last_name}`;
+  const urlEcodedFullName = encodeURIComponent(fullName);
 
   return (
     <div className="flex flex-col items-center justify-center gap-2">
-      <div className="border-2 rounded-full p-2 h-24 w-24 text-5xl font-bold flex items-center justify-center">
-        <div className="leading-none">{user?.first_name.charAt(0)}</div>
+      <div className="border-2 rounded-full p-1 h-24 w-24 text-5xl font-bold flex items-center justify-center">
+        <Avatar className="w-full h-full">
+          <AvatarImage
+            src={`https://api.dicebear.com/9.x/shapes/svg?seed=${urlEcodedFullName}`}
+          />
+          <AvatarFallback>
+            <p>{user.first_name.charAt(0)}</p>
+          </AvatarFallback>
+        </Avatar>
       </div>
       <div className="text-center">
         <h1 className="font-bold text-lg">{fullName}</h1>
         <div>
           <p className="text-secondary-foreground text-sm opacity-50 leading-none">
-            @{user?.username}
+            @{user.username}
           </p>
           <p className="text-secondary-foreground text-sm opacity-50 leading-none">
-            {user?.email}
+            {user.email}
           </p>
         </div>
       </div>
@@ -60,7 +77,7 @@ const ProfileSummary = ({ user }: { user: TUserData }) => {
 const ProfileSummarySkeleton = () => {
   return (
     <div className="flex flex-col items-center justify-center gap-2">
-      <div className="border-2 rounded-full p-2 h-24 w-24 text-5xl font-bold flex items-center justify-center">
+      <div className="border-2 rounded-full p-1 h-24 w-24 text-5xl font-bold flex items-center justify-center">
         <div className="leading-none">&nbsp;</div>
       </div>
       <div className="text-center">

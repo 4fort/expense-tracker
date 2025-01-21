@@ -21,7 +21,10 @@ export default function TitleHeader({
 
   return (
     <header
-      className={cn("flex items-center justify-center h-16 px-4", className)}
+      className={cn(
+        "sticky top-0 flex items-center justify-center h-16 px-4 z-40",
+        className
+      )}
     >
       {hasBackButton && (
         <Button

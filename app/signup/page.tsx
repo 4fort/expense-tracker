@@ -17,6 +17,11 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CheckedState } from "@radix-ui/react-checkbox";
+import { useRouter } from "next/navigation";
+import { TUserData } from "@/types/TUserData";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const steps = [
   {
@@ -244,7 +249,7 @@ const AccountSetup = ({
             }
             value={data.email}
             className={cn(invalidEmail && "ring-2 ring-red-500")}
-            labelClassName={cn(invalidEmail) && "text-red-500"}
+            labelClassName={cn(invalidEmail && "text-red-500")}
             required
           />
           {invalidEmail && (
@@ -262,7 +267,7 @@ const AccountSetup = ({
             }
             value={data.username}
             className={cn(invalidUsername && "ring-2 ring-red-500")}
-            labelClassName={cn(invalidUsername) && "text-red-500"}
+            labelClassName={cn(invalidUsername && "text-red-500")}
             required
           />
           {invalidUsername && (
@@ -447,7 +452,11 @@ const Confirmation = ({
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   isLoading: boolean;
 }) => {
-  const [, formAction, isPending] = useActionState(signup, null);
+  const router = useRouter();
+
+  const [tncAccepted, setTncAccepted] = useState<CheckedState>(false);
+  const [state, formAction, isPending] = useActionState(signup, null);
+  const { setUser } = useAuthStore();
 
   const handleNext = async () => {
     setIsLoading(true);
@@ -464,6 +473,21 @@ const Confirmation = ({
 
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    if (state) {
+      const data: TUserData = {
+        id: state.id,
+        first_name: state.first_name,
+        middle_name: state.middle_name,
+        last_name: state.last_name,
+        email: state.email,
+        username: state.username,
+      };
+      setUser(data);
+      return router.push("/");
+    }
+  }, [state, isPending]);
 
   return (
     <form
@@ -530,9 +554,32 @@ const Confirmation = ({
             />
           </div>
         </div>
+        <div className="items-top flex space-x-2">
+          <Checkbox
+            checked={tncAccepted}
+            onCheckedChange={setTncAccepted}
+            id="terms1"
+          />
+          <div className="grid gap-1.5 leading-none">
+            <label
+              htmlFor="terms1"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Accept terms and conditions
+            </label>
+            <p className="text-sm text-muted-foreground">
+              You agree to our Terms of Service and Privacy Policy.
+            </p>
+          </div>
+        </div>
       </div>
       <div className="flex flex-col gap-2">
-        <Button type="submit" className="w-full" size="lg" disabled={isPending}>
+        <Button
+          type="submit"
+          className="w-full transition-all"
+          size="lg"
+          disabled={isPending || !tncAccepted}
+        >
           {isPending && <Loader2 className="animate-spin" />}
           {isPending ? "Signing up" : "Sign Up"}
         </Button>
