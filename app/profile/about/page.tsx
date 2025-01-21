@@ -12,6 +12,10 @@ const context = {
       name: "DiceBear Avatars API",
       url: "https://www.dicebear.com/",
     },
+    {
+      name: "shadcn-ui",
+      url: "https://ui.shadcn.com/",
+    },
   ],
 };
 
