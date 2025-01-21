@@ -18,7 +18,7 @@ const LabelInput = React.forwardRef<
       <div className="flex flex-col relative text-sm">
         <LabelPrimitive.Root
           className={cn(
-            "absolute left-4 top-1.5 select-none text-xs font-semibold",
+            "absolute left-4 top-1.5 text-xs font-semibold",
             labelClassName
           )}
           htmlFor={name}
