@@ -8,7 +8,9 @@ const Main = ({
   children: React.ReactNode;
   className?: string;
 }>) => {
-  return <main className={cn("h-full p-4", className)}>{children}</main>;
+  return (
+    <main className={cn("flex-grow p-4 pb-24", className)}>{children}</main>
+  );
 };
 
 export default Main;

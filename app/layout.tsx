@@ -27,9 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${nunitoSans.className} antialiased h-screen pb-16`}>
-        {children}
-      </body>
+      <body className={`${nunitoSans.className} antialiased`}>{children}</body>
     </html>
   );
 }
