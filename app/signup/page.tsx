@@ -10,13 +10,12 @@ import BrandLogo from "@/components/brand-logo";
 import Main from "@/components/main";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "motion/react";
-import { title } from "process";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
+// import {
+//   InputOTP,
+//   InputOTPGroup,
+//   InputOTPSeparator,
+//   InputOTPSlot,
+// } from "@/components/ui/input-otp";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import { useRouter } from "next/navigation";
@@ -65,7 +64,6 @@ export default function SignUpPage() {
     last_name: "",
   });
   const [currentStep, setCurrentStep] = useState(0);
-  const [previousStep, setPreviousStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   return (
@@ -122,13 +120,7 @@ export default function SignUpPage() {
               exit={{ opacity: 0, x: "-100%" }}
               transition={{ duration: 0.2, type: "spring", bounce: 0 }}
             >
-              <Confirmation
-                setFinalData={setFinalData}
-                finalData={finalData}
-                setCurrentStep={setCurrentStep}
-                setIsLoading={setIsLoading}
-                isLoading={isLoading}
-              />
+              <Confirmation finalData={finalData} setIsLoading={setIsLoading} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -349,7 +341,6 @@ const PersonalInformation = ({
   });
 
   const [invalidFirstName, setInvalidFirstName] = useState(false);
-  const [invalidMiddleName, setInvalidMiddleName] = useState(false);
   const [invalidLastName, setInvalidLastName] = useState(false);
 
   const handleNext = async () => {
@@ -440,17 +431,11 @@ const PersonalInformation = ({
 };
 
 const Confirmation = ({
-  setFinalData,
   finalData,
-  setCurrentStep,
   setIsLoading,
-  isLoading,
 }: {
-  setFinalData: React.Dispatch<React.SetStateAction<IFormData>>;
   finalData: IFormData;
-  setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  isLoading: boolean;
 }) => {
   const router = useRouter();
 
@@ -588,30 +573,30 @@ const Confirmation = ({
   );
 };
 
-const Verify = ({
-  setCurrentStep,
-  setIsLoading,
-  isLoading,
-}: {
-  setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  isLoading: boolean;
-}) => {
-  return (
-    <form>
-      <InputOTP maxLength={6}>
-        <InputOTPGroup>
-          <InputOTPSlot index={0} />
-          <InputOTPSlot index={1} />
-          <InputOTPSlot index={2} />
-        </InputOTPGroup>
-        <InputOTPSeparator />
-        <InputOTPGroup>
-          <InputOTPSlot index={3} />
-          <InputOTPSlot index={4} />
-          <InputOTPSlot index={5} />
-        </InputOTPGroup>
-      </InputOTP>
-    </form>
-  );
-};
+// const Verify = ({
+//   setCurrentStep,
+//   setIsLoading,
+//   isLoading,
+// }: {
+//   setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
+//   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+//   isLoading: boolean;
+// }) => {
+//   return (
+//     <form>
+//       <InputOTP maxLength={6}>
+//         <InputOTPGroup>
+//           <InputOTPSlot index={0} />
+//           <InputOTPSlot index={1} />
+//           <InputOTPSlot index={2} />
+//         </InputOTPGroup>
+//         <InputOTPSeparator />
+//         <InputOTPGroup>
+//           <InputOTPSlot index={3} />
+//           <InputOTPSlot index={4} />
+//           <InputOTPSlot index={5} />
+//         </InputOTPGroup>
+//       </InputOTP>
+//     </form>
+//   );
+// };

@@ -1,5 +1,4 @@
 import Main from "@/components/main";
-import { NavBar } from "@/components/nav-bar";
 import TitleHeader from "@/components/title-header";
 import React from "react";
 

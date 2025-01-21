@@ -14,11 +14,10 @@ export const verifyPassword = async (password: string): Promise<boolean> => {
 
   const user_email = current_data.user.email;
 
-  const { data: user, error: sign_in_error } =
-    await supabase.auth.signInWithPassword({
-      email: user_email,
-      password,
-    });
+  const { error: sign_in_error } = await supabase.auth.signInWithPassword({
+    email: user_email,
+    password,
+  });
 
   if (sign_in_error) {
     return false;

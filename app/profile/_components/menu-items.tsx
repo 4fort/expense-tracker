@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
-import { Bolt, ChevronRight, CircleHelp, UserRoundCog } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const context = {

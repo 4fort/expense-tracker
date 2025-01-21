@@ -1,10 +1,8 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import Main from "@/components/main";
-import { NavBar } from "@/components/nav-bar";
 import { TUserData } from "@/types/TUserData";
-import { useAuthStore } from "@/store/useAuthStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useAuthPersist from "@/hooks/useAuthPersist";
 

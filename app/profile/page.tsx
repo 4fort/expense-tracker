@@ -1,15 +1,13 @@
 "use client";
 
 import Main from "@/components/main";
-import { NavBar } from "@/components/nav-bar";
 import SignOutButton from "@/components/sign-out-button";
 import TitleHeader from "@/components/title-header";
 import { Separator } from "@/components/ui/separator";
 import { TUserData } from "@/types/TUserData";
-import React, { useEffect } from "react";
+import React from "react";
 import { MenuItems } from "./_components/menu-items";
 import Loading from "@/components/loading";
-import { useAuthStore } from "@/store/useAuthStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useAuthPersist from "@/hooks/useAuthPersist";
 import InstallPrompt from "@/components/install-prompt";

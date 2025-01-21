@@ -23,7 +23,6 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 
-import { useAuthStore } from "@/store/useAuthStore";
 import { TUserData } from "@/types/TUserData";
 import { AnimatePresence, motion } from "motion/react";
 import React, { useActionState, useEffect, useRef, useState } from "react";
@@ -76,7 +75,7 @@ export default function EditProfilePage() {
                 <PreviewSkeleton />
               )}
               {user ? <AccountPreview user={user} /> : <PreviewSkeleton />}
-              {user ? <PasswordPreview user={user} /> : <PreviewSkeleton />}
+              {user ? <PasswordPreview /> : <PreviewSkeleton />}
             </div>
           </div>
         </Main>
@@ -100,30 +99,30 @@ const PersonalInformationPreview = ({ user }: { user: TUserData }) => {
   );
 };
 
-const EditPersonalInformationDrawer = () => {
-  return (
-    <Drawer>
-      <DrawerTrigger asChild>
-        <Button>Edit</Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>Edit Personal Information</DrawerTitle>
-          <DrawerDescription></DrawerDescription>
-        </DrawerHeader>
-        <div className="">
-          <form action=""></form>
-        </div>
-        <DrawerFooter>
-          <Button>Submit</Button>
-          <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
-  );
-};
+// const EditPersonalInformationDrawer = () => {
+//   return (
+//     <Drawer>
+//       <DrawerTrigger asChild>
+//         <Button>Edit</Button>
+//       </DrawerTrigger>
+//       <DrawerContent>
+//         <DrawerHeader>
+//           <DrawerTitle>Edit Personal Information</DrawerTitle>
+//           <DrawerDescription></DrawerDescription>
+//         </DrawerHeader>
+//         <div className="">
+//           <form action=""></form>
+//         </div>
+//         <DrawerFooter>
+//           <Button>Submit</Button>
+//           <DrawerClose asChild>
+//             <Button variant="outline">Cancel</Button>
+//           </DrawerClose>
+//         </DrawerFooter>
+//       </DrawerContent>
+//     </Drawer>
+//   );
+// };
 
 const AccountPreview = ({ user }: { user: TUserData }) => {
   return (
@@ -139,32 +138,32 @@ const AccountPreview = ({ user }: { user: TUserData }) => {
   );
 };
 
-const EditAccountDrawer = () => {
-  return (
-    <Drawer>
-      <DrawerTrigger asChild>
-        <Button>Edit</Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>Edit Account</DrawerTitle>
-          <DrawerDescription></DrawerDescription>
-        </DrawerHeader>
-        <div className="">
-          <form action=""></form>
-        </div>
-        <DrawerFooter>
-          <Button>Submit</Button>
-          <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
-  );
-};
+// const EditAccountDrawer = () => {
+//   return (
+//     <Drawer>
+//       <DrawerTrigger asChild>
+//         <Button>Edit</Button>
+//       </DrawerTrigger>
+//       <DrawerContent>
+//         <DrawerHeader>
+//           <DrawerTitle>Edit Account</DrawerTitle>
+//           <DrawerDescription></DrawerDescription>
+//         </DrawerHeader>
+//         <div className="">
+//           <form action=""></form>
+//         </div>
+//         <DrawerFooter>
+//           <Button>Submit</Button>
+//           <DrawerClose asChild>
+//             <Button variant="outline">Cancel</Button>
+//           </DrawerClose>
+//         </DrawerFooter>
+//       </DrawerContent>
+//     </Drawer>
+//   );
+// };
 
-const PasswordPreview = ({ user }: { user: TUserData }) => {
+const PasswordPreview = () => {
   return (
     <Card>
       <CardHeader>
