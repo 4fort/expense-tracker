@@ -51,8 +51,6 @@ const AppearanceSettings = () => {
   const [isAutomatic, setIsAutomatic] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState<string>("");
 
-  console.log(theme, isAutomatic, selectedTheme);
-
   useEffect(() => {
     if (theme === "system") {
       setIsAutomatic(true);
@@ -98,7 +96,7 @@ const AppearanceSettings = () => {
         </RadioGroup>
         <Separator orientation="horizontal" className="my-4" />
         <div className="flex justify-between">
-          <span>Automatic</span>
+          <span>System</span>
           <Switch
             checked={isAutomatic}
             onCheckedChange={(checked) => {

@@ -11,13 +11,17 @@ export default function useAuthPersist() {
 
   useEffect(() => {
     if (loading) {
+      revalidate();
+      console.log("Waiting for revalidation to finish");
       // Wait for revalidation to finish
       return;
     }
 
     if (!user && isAuthorized) {
+      console.log("User is not loaded but is authorized, revalidating");
       revalidate();
     } else if (!user && !isAuthorized) {
+      console.log("User is not loaded and is not authorized");
       const handleSignOut = async () => {
         const response = await fetch("/auth/sign-out", {
           method: "POST",
