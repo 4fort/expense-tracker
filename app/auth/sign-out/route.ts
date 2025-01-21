@@ -10,7 +10,7 @@ export async function POST() {
   const { data, error } = await supabase.auth.getUser();
 
   if (error || !data?.user) {
-    return new NextResponse("", { status: 401 });
+    return new NextResponse(error?.message, { status: error?.status });
   }
 
   await supabase.auth.signOut();

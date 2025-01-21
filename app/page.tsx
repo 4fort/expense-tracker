@@ -6,15 +6,10 @@ import { NavBar } from "@/components/nav-bar";
 import { TUserData } from "@/types/TUserData";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import useAuthPersist from "@/hooks/useAuthPersist";
 
 export default function HomePage() {
-  const { user, revalidate, isAuthorized } = useAuthStore();
-
-  useEffect(() => {
-    if (!user && isAuthorized) {
-      revalidate();
-    }
-  }, [user]);
+  const { user } = useAuthPersist();
 
   return (
     <React.Fragment>

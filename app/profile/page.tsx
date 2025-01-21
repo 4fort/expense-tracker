@@ -11,15 +11,10 @@ import { MenuItems } from "./_components/menu-items";
 import Loading from "@/components/loading";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import useAuthPersist from "@/hooks/useAuthPersist";
 
 export default function ProfilePage() {
-  const { user, revalidate, isAuthorized } = useAuthStore();
-
-  useEffect(() => {
-    if (!user && isAuthorized) {
-      revalidate();
-    }
-  }, [user]);
+  const { user } = useAuthPersist();
 
   return (
     <React.Fragment>

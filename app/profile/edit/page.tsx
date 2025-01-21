@@ -30,19 +30,14 @@ import React, { useActionState, useEffect, useRef, useState } from "react";
 import { changePassword, verifyPassword } from "./action";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
+import useAuthPersist from "@/hooks/useAuthPersist";
 
 const context = {
   title: "Edit Profile",
 };
 
 export default function EditProfilePage() {
-  const { user, revalidate } = useAuthStore();
-
-  useEffect(() => {
-    if (!user) {
-      revalidate();
-    }
-  }, [user]);
+  const { user } = useAuthPersist();
 
   const fullName = `${user?.first_name} ${user?.last_name}`;
   const urlEcodedFullName = encodeURIComponent(fullName);
