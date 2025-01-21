@@ -5,27 +5,36 @@ import { Home, User2, WalletCards } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 
 const navLinks = [
   {
-    icon: [<Home key={0} />, <Home stroke="#d4d4d8" key={1} />],
+    icon: [<Home key={0} />, <Home className="text-primary" key={1} />],
     text: "Home",
     href: "/",
   },
   {
-    icon: [<WalletCards key={0} />, <WalletCards stroke="#d4d4d8" key={1} />],
+    icon: [
+      <WalletCards key={0} />,
+      <WalletCards className="text-primary" key={1} />,
+    ],
     text: "Savings",
     href: "/savings",
   },
   {
-    icon: [<User2 key={0} />, <User2 stroke="#d4d4d8" key={1} />],
+    icon: [<User2 key={0} />, <User2 className="text-primary" key={1} />],
     text: "Profile",
     href: "/profile",
   },
 ];
 
+const excludedPaths = ["/login", "/register", "/forgot-password"];
+const includedPaths = ["/profile", "/savings", "/"];
+
 export const NavBar = () => {
+  const pathname = usePathname();
+  const [isHidden, setIsHidden] = useState(false);
+
   useEffect(() => {
     const disableContextMenu = (e: MouseEvent) => {
       e.preventDefault();
@@ -38,10 +47,31 @@ export const NavBar = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!includedPaths.includes(pathname)) {
+      return setIsHidden(true);
+    }
+    return setIsHidden(false);
+  }, [pathname]);
+
+  if (excludedPaths.includes(pathname)) {
+    return null;
+  }
+
   return (
-    <nav className="w-11/12 mx-auto bg-zinc-800/20 fixed bottom-0 left-0 right-0 p-2 mb-4 rounded-full">
-      <NavLinks />
-    </nav>
+    <AnimatePresence>
+      <motion.nav
+        key="nav-bar"
+        animate={{
+          y: isHidden ? 100 : 0,
+        }}
+        className="w-11/12 mx-auto bg-primary/10 backdrop-blur-md fixed bottom-0 left-0 right-0 p-2 mb-4 rounded-full"
+        transition={{ duration: 0.5, type: "spring", bounce: 0 }}
+        suppressHydrationWarning
+      >
+        <NavLinks />
+      </motion.nav>
+    </AnimatePresence>
   );
 };
 
@@ -56,7 +86,7 @@ const NavLinks = () => {
       <motion.li
         layoutId="nav-underline"
         animate={{ ...geometry }}
-        className="absolute h-full w-32 rounded-full bg-zinc-500 -z-10"
+        className="absolute h-full w-32 rounded-full bg-primary-foreground -z-10"
       />
       {navLinks.map(({ icon, text, href }, i) => (
         <NavSingleLink
@@ -109,7 +139,9 @@ const NavSingleLink = ({
         )}
       >
         {isActive ? icon[1] : icon[0]}
-        <span className={cn("text-xs", isActive && "text-white")}>{text}</span>
+        <span className={cn("text-xs", isActive && "text-foreground")}>
+          {text}
+        </span>
       </Link>
     </motion.li>
   );

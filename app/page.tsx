@@ -17,7 +17,6 @@ export default function HomePage() {
       <Main>
         <h1>Hello World, Home</h1>
       </Main>
-      <NavBar />
     </React.Fragment>
   );
 }

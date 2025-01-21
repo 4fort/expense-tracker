@@ -10,7 +10,6 @@ export default function SavingsPage() {
       <Main>
         <h1>Hello World, Savings</h1>
       </Main>
-      <NavBar />
     </React.Fragment>
   );
 }

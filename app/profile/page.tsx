@@ -35,7 +35,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </Main>
-      <NavBar />
     </React.Fragment>
   );
 }
