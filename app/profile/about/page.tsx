@@ -7,6 +7,12 @@ import React from "react";
 
 const context = {
   title: "About",
+  special_thanks: [
+    {
+      name: "DiceBear Avatars API",
+      url: "https://www.dicebear.com/",
+    },
+  ],
 };
 
 export default function HelpPage() {

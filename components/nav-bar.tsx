@@ -28,7 +28,7 @@ const navLinks = [
   },
 ];
 
-const excludedPaths = ["/login", "/register", "/forgot-password"];
+const excludedPaths = ["/login", "/signup", "/forgot-password"];
 const includedPaths = ["/profile", "/savings", "/"];
 
 export const NavBar = () => {
