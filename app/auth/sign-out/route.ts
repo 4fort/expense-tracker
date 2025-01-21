@@ -10,6 +10,7 @@ export async function POST() {
   const { data, error } = await supabase.auth.getUser();
 
   if (error || !data?.user) {
+    console.log("[ ERROR ] Sign out failed:", error?.message);
     return new NextResponse(error?.message, { status: error?.status });
   }
 

@@ -29,13 +29,18 @@ export const useAuthStore = create<IUseAuthStore>()(
             method: "GET",
           });
 
+          console.log("Fetching user data...");
+
           if (!response.ok) {
-            set({ loading: false }); // Stop loading if revalidation fails
+            set({ loading: false });
+            console.log("Revalidation failed, user data not found");
             return;
           }
 
           const userData = await response.json();
           const data: TUserData = userData.user;
+
+          console.log("Revalidation successful, user data found:", data);
 
           set({
             user: {
@@ -57,7 +62,7 @@ export const useAuthStore = create<IUseAuthStore>()(
     }),
     {
       name: "auth",
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );

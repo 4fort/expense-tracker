@@ -16,7 +16,7 @@ export default function useAuthPersist() {
     }
 
     if (!user && isAuthorized) {
-      revalidate(); // Trigger revalidation if authorized but no user data
+      revalidate();
     } else if (!user && !isAuthorized) {
       const handleSignOut = async () => {
         const response = await fetch("/auth/sign-out", {
