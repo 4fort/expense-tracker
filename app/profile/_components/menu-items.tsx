@@ -25,6 +25,12 @@ const context = {
       icon: "circle-help",
       href: "/profile/help",
     },
+    {
+      code: "about",
+      title: "About",
+      icon: "circle-help",
+      href: "/profile/about",
+    },
   ],
 };
 
