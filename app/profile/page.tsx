@@ -12,6 +12,7 @@ import Loading from "@/components/loading";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useAuthPersist from "@/hooks/useAuthPersist";
+import InstallPrompt from "@/components/install-prompt";
 
 export default function ProfilePage() {
   const { user } = useAuthPersist();
@@ -27,6 +28,7 @@ export default function ProfilePage() {
             <h5 className="text-sm opacity-50">Profile Menu</h5>
             <MenuItems />
           </div>
+          <InstallPrompt />
           <Separator orientation="horizontal" />
           <div className="w-full">
             <SignOutButton className="w-full" />
