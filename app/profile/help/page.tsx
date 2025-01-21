@@ -19,9 +19,14 @@ export default function HelpPage() {
         exit={{ x: "100%" }}
         transition={{ duration: 0.2, type: "spring", bounce: 0 }}
       >
-        <TitleHeader title={context.title} hasBackButton />
+        <TitleHeader
+          title={context.title}
+          className="bg-accent/30 backdrop-blur-md"
+          size="md"
+          hasBackButton
+        />
         <Main>
-          <div>EditProfilePage</div>
+          <div>Help</div>
         </Main>
       </motion.div>
     </AnimatePresence>

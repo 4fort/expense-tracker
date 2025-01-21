@@ -48,12 +48,13 @@ export default function EditProfilePage() {
         initial={{ x: "100%", overflow: "hidden" }}
         animate={{ x: 0, overflow: "auto" }}
         exit={{ x: "100%", overflow: "hidden" }}
-        transition={{ duration: 0.5, type: "spring", bounce: 0 }}
+        transition={{ duration: 0.2, type: "spring", bounce: 0 }}
         className="h-[inherit] p-[inherit] bg-accent"
       >
         <TitleHeader
           title={context.title}
           className="bg-accent/30 backdrop-blur-md"
+          size="md"
           hasBackButton
         />
         <Main>
