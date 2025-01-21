@@ -31,7 +31,7 @@ const LabelInput = React.forwardRef<
           type={type}
           ref={ref}
           className={cn(
-            "px-4 pt-6 pb-2 bg-black/10 rounded-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm transition-all",
+            "px-4 pt-6 pb-2 bg-input rounded-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm transition-all",
             className
           )}
           {...props}

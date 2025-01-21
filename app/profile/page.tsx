@@ -23,7 +23,7 @@ export default function ProfilePage() {
       <TitleHeader title="Profile" className="bg-accent" />
       <Main className="bg-accent flex flex-col gap-8">
         {user ? <ProfileSummary user={user} /> : <ProfileSummarySkeleton />}
-        <div className="flex flex-col items-center gap-4 w-full bg-background p-4 rounded-lg">
+        <div className="flex flex-col items-center gap-4 w-full bg-card text-card-foreground shadow-sm p-4 rounded-lg">
           <div className="w-full">
             <h5 className="text-sm opacity-50">Profile Menu</h5>
             <MenuItems />

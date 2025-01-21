@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Nunito_Sans } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const nunitoSans = Nunito_Sans({
   subsets: ["latin"],
@@ -9,6 +10,9 @@ const nunitoSans = Nunito_Sans({
 export const metadata: Metadata = {
   title: "fortracker",
   description: "Modern expense tracker right in the web!",
+  appleWebApp: {
+    statusBarStyle: "black-translucent",
+  },
 };
 
 export const viewport: Viewport = {
@@ -26,8 +30,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${nunitoSans.className} antialiased`}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${nunitoSans.className} antialiased h-screen flex flex-col`}
+      >
+        <ThemeProvider attribute="class" defaultTheme="system">
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

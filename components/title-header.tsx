@@ -10,12 +10,14 @@ type Props = {
   title: string;
   className?: string;
   hasBackButton?: boolean;
+  size?: "sm" | "md" | "lg";
 };
 
 export default function TitleHeader({
   title,
   className,
   hasBackButton,
+  size = "lg",
 }: Props) {
   const router = useRouter();
 
@@ -35,7 +37,20 @@ export default function TitleHeader({
           <ChevronLeft />
         </Button>
       )}
-      <h1 className="text-2xl font-bold">{title}</h1>
+      <h1
+        className={cn(
+          "font-bold",
+          size === "sm"
+            ? "text-md"
+            : size === "md"
+            ? "text-xl"
+            : size === "lg"
+            ? "text-2xl"
+            : ""
+        )}
+      >
+        {title}
+      </h1>
     </header>
   );
 }
