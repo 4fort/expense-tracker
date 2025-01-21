@@ -1,9 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
 import { ChevronRight } from "lucide-react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const context = {
@@ -36,8 +34,6 @@ const context = {
 };
 
 export const MenuItems = () => {
-  const router = useRouter();
-
   return (
     <ul>
       {context.profile_menu.map((item) => (
