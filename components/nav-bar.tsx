@@ -18,8 +18,8 @@ const navLinks = [
       <WalletCards key={0} />,
       <WalletCards className="text-primary" key={1} />,
     ],
-    text: "Savings",
-    href: "/savings",
+    text: "Pocket",
+    href: "/pocket",
   },
   {
     icon: [<User2 key={0} />, <User2 className="text-primary" key={1} />],
@@ -29,7 +29,7 @@ const navLinks = [
 ];
 
 const excludedPaths = ["/login", "/signup", "/forgot-password"];
-const includedPaths = ["/profile", "/savings", "/"];
+const includedPaths = ["/profile", "/pocket", "/"];
 
 export const NavBar = () => {
   const pathname = usePathname();
