@@ -11,7 +11,7 @@ export default function PocketPage() {
   const { user } = useAuthPersist();
   const { trackers, isTrackerEmpty } = usePocketPersist();
 
-  console.log(isTrackerEmpty);
+  console.log(trackers);
 
   return (
     <div

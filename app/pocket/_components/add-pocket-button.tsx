@@ -14,14 +14,14 @@ import {
 } from "@/components/ui/drawer";
 import { Plus, TriangleAlert } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
+// import { Label } from "@/components/ui/label";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -105,7 +105,7 @@ const AddTracker = ({ isTrackerEmpty: isPocketEmpty, isFreeUser }: Props) => {
 export default AddTracker;
 
 const TrackerFormBody = () => {
-  const [trackerType, setTrackerType] = useState<string>("");
+  // const [trackerType, setTrackerType] = useState<string>("");
   const [color, setColor] = useState<string>("green");
   const [icon, setIcon] = useState<IconName>("piggy-bank");
   return (
