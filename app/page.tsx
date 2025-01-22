@@ -5,6 +5,8 @@ import Main from "@/components/main";
 import { TUserData } from "@/types/TUserData";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useAuthPersist from "@/hooks/useAuthPersist";
+import { cn } from "@/lib/utils";
+import { Star } from "lucide-react";
 
 export default function HomePage() {
   const { user } = useAuthPersist();
@@ -28,7 +30,18 @@ const Header = ({ user }: { user: TUserData }) => {
       <div className="flex flex-col">
         <span className="text-xs text-zinc-500">Hello,</span> <p>{fullName}</p>
       </div>
-      <div className="border-2 rounded-full h-9 w-9 flex items-center justify-center">
+      <div
+        className={cn(
+          "border rounded-full h-9 w-9 p-0.5 flex items-center justify-center",
+          user.plan === "pro" ? "border-yellow-400 relative" : "border-border"
+        )}
+      >
+        {user.plan === "pro" && (
+          <Star
+            className="absolute -bottom-1 -right-1 text-yellow-400 stroke-accent h-4 w-4 z-10"
+            fill="currentColor"
+          />
+        )}
         <Avatar className="w-full h-full">
           <AvatarImage
             src={`https://api.dicebear.com/9.x/shapes/svg?seed=${urlEcodedFullName}`}

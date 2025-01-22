@@ -42,6 +42,7 @@ export async function login(
       middle_name: "",
       last_name: "",
       username: "",
+      plan: "free",
     };
 
     return user;

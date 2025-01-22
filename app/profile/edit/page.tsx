@@ -352,7 +352,7 @@ const EditPasswordDrawer = () => {
               )
             )}
           </AnimatePresence>
-          <DrawerFooter className="pb-8">
+          <DrawerFooter>
             {currentStep < 2 && (
               <Button
                 type={isChangePasswordForm ? "submit" : "button"}

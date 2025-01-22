@@ -32,6 +32,7 @@ export async function GET() {
       middle_name: "",
       last_name: "",
       username: "",
+      plan: "free",
     };
 
     return NextResponse.json({ user }, { status: 200 });
