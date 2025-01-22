@@ -50,6 +50,7 @@ export const useAuthStore = create<IUseAuthStore>()(
               middle_name: data.middle_name,
               last_name: data.last_name,
               username: data.username,
+              plan: data.plan,
             },
             isAuthorized: true,
             loading: false, // Revalidation complete

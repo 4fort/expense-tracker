@@ -68,5 +68,13 @@ export default {
       },
     },
   },
+  safelist: [
+    {
+      pattern: /^bg-(green|sky|rose|yellow|violet|slate|orange)-\d{1,3}$/,
+    },
+    {
+      pattern: /^text-(green|sky|rose|yellow|violet|slate|orange)-\d{1,3}$/,
+    },
+  ],
   plugins: [animate],
 } satisfies Config;

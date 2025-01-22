@@ -60,6 +60,7 @@ export async function signup(
       middle_name: "",
       last_name: "",
       username: "",
+      plan: "free",
     };
   }
 
@@ -74,6 +75,7 @@ export async function signup(
     middle_name: updatedUser.middle_name,
     last_name: updatedUser.last_name,
     username: updatedUser.username,
+    plan: updatedUser.plan,
   };
 
   return user;

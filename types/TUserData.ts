@@ -5,4 +5,5 @@ export type TUserData = {
   middle_name: string;
   last_name: string;
   username: string;
+  plan: string;
 };

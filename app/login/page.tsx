@@ -29,6 +29,7 @@ export default function LoginPage() {
         last_name: state.last_name,
         email: state.email,
         username: state.username,
+        plan: state.plan,
       };
       setUser(data);
       return router.push("/");

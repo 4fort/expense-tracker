@@ -1,14 +1,30 @@
+"use client";
+
 import Main from "@/components/main";
 import TitleHeader from "@/components/title-header";
 import React from "react";
+import AddTracker from "./_components/add-pocket-button";
+import usePocketPersist from "@/hooks/useTrackerPersist";
+import useAuthPersist from "@/hooks/useAuthPersist";
 
 export default function PocketPage() {
+  const { user } = useAuthPersist();
+  const { trackers, isTrackerEmpty } = usePocketPersist();
+
+  console.log(isTrackerEmpty);
+
   return (
-    <React.Fragment>
-      <TitleHeader title="Pocket" />
-      <Main>
-        <h1>Hello World, Pocket</h1>
+    <div
+      className="p-[inherit] h-[inherit] bg-accent overflow-y-auto"
+      vaul-drawer-wrapper=""
+    >
+      <TitleHeader title="Pocket" className="bg-accent/30 backdrop-blur-md" />
+      <Main className="flex flex-col">
+        <AddTracker
+          isTrackerEmpty={isTrackerEmpty}
+          isFreeUser={user?.plan === "free"}
+        />
       </Main>
-    </React.Fragment>
+    </div>
   );
 }

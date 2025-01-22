@@ -468,6 +468,7 @@ const Confirmation = ({
         last_name: state.last_name,
         email: state.email,
         username: state.username,
+        plan: state.plan,
       };
       setUser(data);
       return router.push("/");
@@ -476,7 +477,7 @@ const Confirmation = ({
 
   return (
     <form
-      className="w-full h-full max-w-sm flex flex-col justify-between"
+      className="w-full h-full max-w-sm flex flex-col justify-between gap-4"
       action={handleNext}
     >
       <div className="flex flex-col gap-4">

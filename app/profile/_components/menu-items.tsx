@@ -39,12 +39,11 @@ export const MenuItems = () => {
       {context.profile_menu.map((item) => (
         <li key={item.code}>
           <Link
-            type="button"
-            className="text-md py-6 my-1 inline-flex justify-between items-center text-sm font-medium w-full hover:bg-accent hover:text-accent-foreground transition-all h-11 rounded-xl px-8 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+            className="text-md py-6 my-1 inline-flex justify-between items-center font-medium w-full hover:bg-accent hover:text-accent-foreground transition-all h-11 rounded-xl px-8 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
             href={item.href}
           >
             <div className="flex items-center gap-4">
-              <DynamicIcon name={item.icon as IconName} />
+              <DynamicIcon name={item.icon as IconName} size={48} />
               {item.title}
             </div>
             <ChevronRight />
