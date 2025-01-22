@@ -16,10 +16,10 @@ export default function ProfilePage() {
   const { user } = useAuthPersist();
 
   return (
-    <React.Fragment>
+    <div className="p-[inherit] h-[inherit] bg-accent overflow-y-auto">
       {!user && <Loading />}
-      <TitleHeader title="Profile" className="bg-accent" />
-      <Main className="bg-accent flex flex-col gap-8">
+      <TitleHeader title="Profile" className="bg-accent/30 backdrop-blur-md" />
+      <Main className="bg-accent flex flex-col gap-8 overflow-y-auto">
         {user ? <ProfileSummary user={user} /> : <ProfileSummarySkeleton />}
         <div className="flex flex-col items-center gap-4 w-full bg-card text-card-foreground shadow-sm p-4 rounded-lg">
           <div className="w-full">
@@ -33,7 +33,7 @@ export default function ProfilePage() {
           </div>
         </div>
       </Main>
-    </React.Fragment>
+    </div>
   );
 }
 

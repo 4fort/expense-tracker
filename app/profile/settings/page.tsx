@@ -26,9 +26,9 @@ export default function SettingsPage() {
     <AnimatePresence>
       <motion.div
         key="edit-profile"
-        initial={{ x: "100%" }}
-        animate={{ x: 0 }}
-        exit={{ x: "100%" }}
+        initial={{ x: "100%", overflow: "hidden" }}
+        animate={{ x: 0, overflow: "auto" }}
+        exit={{ x: "100%", overflow: "hidden" }}
         transition={{ duration: 0.2, type: "spring", bounce: 0 }}
         className="h-[inherit] p-[inherit] bg-accent"
       >

@@ -314,7 +314,10 @@ const EditPasswordDrawer = () => {
           <DrawerTitle>Change Password</DrawerTitle>
           <DrawerDescription></DrawerDescription>
         </DrawerHeader>
-        <form action={isChangePasswordForm ? handleSubmit : ""}>
+        <form
+          action={isChangePasswordForm ? handleSubmit : ""}
+          className="flex-grow flex flex-col"
+        >
           <AnimatePresence>
             {currentStep === 0 ? (
               <CurrentPasswordForm
@@ -349,7 +352,7 @@ const EditPasswordDrawer = () => {
               )
             )}
           </AnimatePresence>
-          <DrawerFooter>
+          <DrawerFooter className="pb-8">
             {currentStep < 2 && (
               <Button
                 type={isChangePasswordForm ? "submit" : "button"}
