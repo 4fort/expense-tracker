@@ -34,6 +34,7 @@ const includedPaths = ["/profile", "/pocket", "/"];
 export const NavBar = () => {
   const pathname = usePathname();
   const [isHidden, setIsHidden] = useState(false);
+  const [isInitial, setIsInitial] = useState(true);
 
   useEffect(() => {
     const disableContextMenu = (e: MouseEvent) => {
@@ -48,6 +49,8 @@ export const NavBar = () => {
   }, []);
 
   useEffect(() => {
+    setIsInitial(false);
+
     if (!includedPaths.includes(pathname)) {
       return setIsHidden(true);
     }
@@ -62,11 +65,17 @@ export const NavBar = () => {
     <AnimatePresence>
       <motion.nav
         key="nav-bar"
+        initial={{ y: 100 }}
         animate={{
           y: isHidden ? 100 : 0,
         }}
-        className="w-11/12 mx-auto bg-primary/10 backdrop-blur-md fixed bottom-1 left-0 right-0 p-2 mb-4 rounded-full"
-        transition={{ duration: 0.5, type: "spring", bounce: 0 }}
+        className="w-11/12 mx-auto bg-primary/10 backdrop-blur-md fixed bottom-1 left-0 right-0 p-2 mb-4 rounded-full translate-y-full"
+        transition={{
+          delay: isInitial ? 0.5 : 0,
+          duration: 0.5,
+          type: "spring",
+          bounce: 0,
+        }}
         suppressHydrationWarning
       >
         <NavLinks />
