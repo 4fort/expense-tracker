@@ -31,6 +31,7 @@ export async function useUserData(): Promise<{ user: TUserData }> {
       middle_name: "",
       last_name: "",
       username: "",
+      plan: "free",
     };
 
     return { user };
