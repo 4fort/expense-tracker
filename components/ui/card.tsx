@@ -1,20 +1,39 @@
 import * as React from "react";
+import { motion, HTMLMotionProps } from "motion/react";
 
 import { cn } from "@/lib/utils";
 
-const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg bg-card text-card-foreground shadow-sm",
-      className
-    )}
-    {...props}
-  />
-));
+type CardProps = {
+  isMotion?: boolean;
+} & (HTMLMotionProps<"div"> | React.HTMLAttributes<HTMLDivElement>);
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, isMotion, ...props }, ref) => {
+    if (isMotion) {
+      return (
+        <motion.div
+          ref={ref}
+          className={cn(
+            "rounded-lg bg-card text-card-foreground shadow-sm",
+            className
+          )}
+          {...(props as HTMLMotionProps<"div">)}
+        />
+      );
+    }
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "rounded-lg bg-card text-card-foreground shadow-sm",
+          className
+        )}
+        {...(props as React.HTMLAttributes<HTMLDivElement>)}
+      />
+    );
+  }
+);
 Card.displayName = "Card";
 
 const CardHeader = React.forwardRef<
