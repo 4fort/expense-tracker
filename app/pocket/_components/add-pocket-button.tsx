@@ -9,6 +9,7 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
+  DrawerNested,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
@@ -83,7 +84,7 @@ const AddTracker = ({ isTrackerEmpty: isPocketEmpty, isFreeUser }: Props) => {
           </Button>
         )}
       </DrawerTrigger>
-      <DrawerContent className="min-h-[90vh]" ref={formContainerRef}>
+      <DrawerContent className="min-h-[97vh]" ref={formContainerRef}>
         <DrawerHeader>
           <DrawerTitle>Add Tracker</DrawerTitle>
           <DrawerDescription></DrawerDescription>
@@ -104,40 +105,70 @@ const AddTracker = ({ isTrackerEmpty: isPocketEmpty, isFreeUser }: Props) => {
 
 export default AddTracker;
 
+interface ITrackerData {
+  name: string;
+  amount: number | string;
+  icon: IconName;
+  color: TTrackerColors;
+}
+
+type TTrackerColors =
+  | "green"
+  | "sky"
+  | "rose"
+  | "orange"
+  | "yellow"
+  | "violet"
+  | "slate";
+
 const TrackerFormBody = () => {
-  // const [trackerType, setTrackerType] = useState<string>("");
-  const [color, setColor] = useState<string>("green");
-  const [icon, setIcon] = useState<IconName>("piggy-bank");
+  const [trackerData, setTrackerData] = useState<ITrackerData>({
+    name: "",
+    amount: "",
+    icon: "piggy-bank",
+    color: "green",
+  });
+
   return (
-    <div className="p-4 flex flex-col gap-2" vaul-drawer-wrapper="">
+    <div className="p-4 flex flex-col gap-2">
       <LabelInput label="Name" name="name" placeholder="Enter tracker name" />
       <LabelInput
         label="Amount"
         name="amount"
-        type="number"
+        type="tel" // 'tel' for number pad on mobile
         placeholder="Enter amount to track"
+        inputMode="decimal" // Ensures decimal input mode
+        value={trackerData.amount}
+        step="0.01"
+        onChange={(e) => {
+          let value = e.target.value;
+
+          // Prevent input of negative sign '-'
+          if (value.includes("-")) {
+            value = value.replace("-", ""); // Remove any negative signs
+          }
+
+          // Regular expression to match valid patterns like "123", "123.12", but not "123.1234"
+          const validPattern = /^\d*\.?\d{0,2}$/;
+
+          if (value === "" || validPattern.test(value)) {
+            setTrackerData({ ...trackerData, amount: value });
+          }
+        }}
       />
-      <ColorIconPicker
-        setColor={setColor}
-        color={color}
-        setIcon={setIcon}
-        icon={icon}
-      />
-      {/* <div className="flex justify-between items-center">
-        <span className="pl-4">
-          <Label htmlFor="type">Type</Label>
-        </span>
-        <Select onValueChange={setTrackerType} defaultValue={trackerType}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Tracker type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="savings">Savings</SelectItem>
-            <SelectItem value="budget">Budget</SelectItem>
-            <SelectItem value="goal">Goal</SelectItem>
-          </SelectContent>
-        </Select>
-      </div> */}
+      <div className="flex items-end justify-between">
+        <label className="">Icon & Color</label>
+        <ColorIconPicker
+          color={trackerData.color}
+          icon={trackerData.icon}
+          setColor={(color: ITrackerData["color"]) =>
+            setTrackerData({ ...trackerData, color })
+          }
+          setIcon={(icon: ITrackerData["icon"]) =>
+            setTrackerData({ ...trackerData, icon })
+          }
+        />
+      </div>
     </div>
   );
 };
@@ -223,7 +254,7 @@ const iconList: { name: IconName; category: string }[] = [
 const iconCategories = Array.from(
   new Set(iconList.map((icon) => icon.category))
 );
-const colorList = [
+const colorList: TTrackerColors[] = [
   "green",
   "sky",
   "rose",
@@ -239,20 +270,22 @@ const ColorIconPicker = ({
   setColor,
   setIcon,
 }: {
-  color: string;
-  icon: IconName;
-  setColor: React.Dispatch<React.SetStateAction<string>>;
-  setIcon: React.Dispatch<React.SetStateAction<IconName>>;
+  color: ITrackerData["color"];
+  icon: ITrackerData["icon"];
+  setColor: (color: ITrackerData["color"]) => void;
+  setIcon: (icon: ITrackerData["icon"]) => void;
 }) => {
   return (
-    <Drawer>
-      <DrawerTrigger asChild>
-        <Button size="lg">
-          <Plus />
-        </Button>
+    <DrawerNested>
+      <DrawerTrigger className="max-w-min border border-muted-foreground/80 rounded-sm p-1">
+        <ColorIconPickerPreview
+          className="w-10 h-10 rounded-sm"
+          color={color}
+          icon={icon}
+        />
       </DrawerTrigger>
       <DrawerContent
-        className="min-h-[85vh] bg-accent"
+        className="min-h-[95vh] bg-accent"
         barClassName="bg-muted-foreground/10"
       >
         <DrawerHeader className="relative">
@@ -267,16 +300,7 @@ const ColorIconPicker = ({
           </DrawerClose>
         </DrawerHeader>
         <div className="grow flex flex-col p-4 pb-8 gap-4">
-          <div className="m-auto">
-            <div
-              className={cn(
-                "w-20 h-20 p-2 rounded-lg",
-                `bg-${color}-200 text-${color}-600`
-              )}
-            >
-              <DynamicIcon className="w-full h-full" name={icon as IconName} />
-            </div>
-          </div>
+          <ColorIconPickerPreview color={color} icon={icon} />
           <div className="grow h-full max-h-[10vh] flex items-center justify-evenly bg-card rounded-md">
             {colorList.map((colorName) => (
               <div
@@ -296,7 +320,7 @@ const ColorIconPicker = ({
               </div>
             ))}
           </div>
-          <ScrollArea className="grow h-full max-h-[50vh] overflow-y-auto p-4 bg-card rounded-md">
+          <ScrollArea className="grow h-full max-h-[60vh] overflow-y-auto p-4 bg-card rounded-md">
             <div className="grid grid-cols-4 gap-2">
               {iconCategories.map((category) => (
                 <div key={category} className="col-span-4">
@@ -322,22 +346,34 @@ const ColorIconPicker = ({
                   </div>
                 </div>
               ))}
-              {/* {iconList.map((_icon) => (
-                <div
-                  key={_icon.name}
-                  className={cn(
-                    "w-16 h-16 p-4 flex items-center justify-center m-auto rounded-md text-muted-foreground",
-                    icon === _icon.name && "bg-muted-foreground/20"
-                  )}
-                  onClick={() => setIcon(_icon.name)}
-                >
-                  <DynamicIcon className="w-full h-full" name={_icon.name} />
-                </div>
-              ))} */}
             </div>
           </ScrollArea>
         </div>
       </DrawerContent>
-    </Drawer>
+    </DrawerNested>
+  );
+};
+
+const ColorIconPickerPreview = ({
+  className,
+  color,
+  icon,
+}: {
+  className?: string;
+  color: string;
+  icon: IconName;
+}) => {
+  return (
+    <div className="m-auto">
+      <div
+        className={cn(
+          "w-20 h-20 p-2 rounded-lg",
+          `bg-${color}-200 text-${color}-600`,
+          className
+        )}
+      >
+        <DynamicIcon className="w-full h-full" name={icon} />
+      </div>
+    </div>
   );
 };
