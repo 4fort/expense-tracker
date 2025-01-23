@@ -69,7 +69,7 @@ export const NavBar = () => {
         animate={{
           y: isHidden ? 100 : 0,
         }}
-        className="w-11/12 mx-auto bg-primary/10 backdrop-blur-md fixed bottom-1 left-0 right-0 p-2 mb-4 rounded-full translate-y-full"
+        className="w-11/12 mx-auto bg-muted-foreground/10 backdrop-blur-md fixed bottom-1 left-0 right-0 p-2 mb-4 rounded-full translate-y-full"
         transition={{
           delay: isInitial ? 0.5 : 0,
           duration: 0.5,
