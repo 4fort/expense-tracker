@@ -3,7 +3,7 @@
 import Main from "@/components/main";
 import TitleHeader from "@/components/title-header";
 import React from "react";
-import AddTracker from "./_components/add-pocket-button";
+import AddTracker from "./_components/add-tracker";
 import usePocketPersist from "@/hooks/useTrackerPersist";
 import useAuthPersist from "@/hooks/useAuthPersist";
 
