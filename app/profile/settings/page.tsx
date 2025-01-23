@@ -95,9 +95,12 @@ const AppearanceSettings = () => {
           </div>
         </RadioGroup>
         <Separator orientation="horizontal" className="my-4" />
-        <div className="flex justify-between">
-          <span>System</span>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="system-toggle" className="text-md">
+            System
+          </Label>
           <Switch
+            id="system-toggle"
             checked={isAutomatic}
             onCheckedChange={(checked) => {
               setIsAutomatic(checked);
