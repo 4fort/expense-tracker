@@ -15,7 +15,7 @@ import {
 import { CalendarIcon, Plus, TriangleAlert } from "lucide-react";
 import React, { memo, useEffect, useState } from "react";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
-import { cn, formatter, getCurrentDay } from "@/lib/utils";
+import { cn, currency, date, getCurrentDay } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTheme } from "next-themes";
 import { Card, CardContent } from "@/components/ui/card";
@@ -184,10 +184,10 @@ const AddTracker = ({ isTrackerEmpty: isPocketEmpty, isFreeUser }: Props) => {
         className="min-h-[95vh] h-[97vh] max-h-[97vh] bg-accent"
         barClassName="bg-muted-foreground/10"
       >
-        <DrawerHeader>
+        <DrawerHeader className="relative none p-1 before:content-[''] before:w-full before:h-4 before:bg-gradient-to-b before:from-accent before:via-70% before:to-transparent before:absolute before:-bottom-4 before:left-0 before:z-10">
           <DrawerTitle className="sr-only">Add Tracker</DrawerTitle>
         </DrawerHeader>
-        <form className="h-full flex-grow flex flex-col gap-4 px-4 pt-0 pb-8 overflow-auto">
+        <form className="h-full flex-grow flex flex-col gap-4 px-4 pt-3 pb-8 overflow-auto">
           <TrackerFormBody />
           <DrawerFooter className="p-0">
             <Button>Submit</Button>
@@ -227,9 +227,9 @@ const TrackerFormBody = () => {
 
   return (
     <div className="h-full flex flex-col gap-4">
-      <TrackerPreview trackerData={trackerData} />
+      <TrackerPreview trackerData={trackerData} isSetTarget={isSetTarget} />
       <ScrollArea
-        className="max-h-min overflow-y-auto after:content-[''] before:w-full after:w-full before:h-6 after:h-6 before:bg-gradient-to-b after:bg-gradient-to-t before:from-accent after:from-accent before:via-70% after:via-70% before:to-transparent after:to-transparent before:absolute after:absolute before:-top-0.5 after:-bottom-0.5 before:left-0 after:left-0 before:z-10 after:z-10"
+        className="max-h-min overflow-y-auto before:content-[''] before:w-full before:h-6 before:bg-gradient-to-b before:from-accent before:via-70% before:to-transparent before:absolute before:-top-0.5 before:left-0 before:z-10 after:content-[''] after:w-full after:h-6 after:bg-gradient-to-t after:from-accent after:via-70% after:to-transparent after:absolute after:-bottom-0.5 after:left-0 after:z-10"
         type="auto"
       >
         <div className="grow flex flex-col gap-2 py-4">
@@ -300,9 +300,18 @@ const AmountInputForm = memo(
     setIsSetTarget,
     isDateEnabled,
   }: FormInputProps) => {
+    const [isTargetAmountValid, setIsTargetAmountValid] = useState("");
+
     const validateAmount = (value: string, maxAmount: number = 99999999.99) => {
       const validPattern = /^\d*\.?\d{0,2}$/;
       return validPattern.test(value) && parseFloat(value) <= maxAmount;
+    };
+
+    const validateTargetAmount = (
+      value: string,
+      minAmount: number = Number(trackerData.amount)
+    ) => {
+      return parseFloat(value) > minAmount;
     };
 
     const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -314,7 +323,24 @@ const AmountInputForm = memo(
       if (value === "" || validateAmount(value)) {
         const field = e.target.name;
         setTrackerData({ ...trackerData, [field]: value });
+
+        if (field === "goal_amount") {
+          if (!validateTargetAmount(value)) {
+            setIsTargetAmountValid(
+              "Target amount must be greater than the initial amount"
+            );
+          } else {
+            setIsTargetAmountValid("");
+          }
+        }
       }
+    };
+
+    const handleTargetDateChange = (date: Date | undefined) => {
+      setTrackerData({
+        ...trackerData,
+        due_date: date ? date.toISOString() : "",
+      });
     };
     return (
       <Card>
@@ -338,7 +364,12 @@ const AmountInputForm = memo(
                   size="md"
                   checked={isSetTarget}
                   onCheckedChange={(e) => {
-                    if (!e) setTrackerData({ ...trackerData, goal_amount: "" });
+                    if (!e)
+                      setTrackerData({
+                        ...trackerData,
+                        goal_amount: "",
+                        due_date: "",
+                      });
                     setIsSetTarget!(e);
                   }}
                   aria-label="Toggle target amount input"
@@ -359,6 +390,8 @@ const AmountInputForm = memo(
                   value={trackerData.goal_amount}
                   step="0.01"
                   onChange={handleAmountChange}
+                  error={!!isTargetAmountValid}
+                  errorMessage={isTargetAmountValid}
                 />
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
@@ -373,7 +406,9 @@ const AmountInputForm = memo(
                   <Label htmlFor="target-date-picker">Target Date</Label>
                   <DatePicker
                     id="target-date-picker"
-                    onValueChange={(date) => {}}
+                    title="Select a target date"
+                    onValueChange={handleTargetDateChange}
+                    disabled={!trackerData.goal_amount ? true : false}
                   />
                 </motion.div>
               </AnimatedDiv>
@@ -406,6 +441,15 @@ const DateInputForm = memo(
         due_date: date ? date.toISOString() : "",
       });
     };
+
+    useEffect(() => {
+      if (!trackerData.start_date) {
+        setTrackerData({
+          ...trackerData,
+          due_date: "",
+        });
+      }
+    }, [trackerData.start_date]);
 
     return (
       <Card>
@@ -462,6 +506,7 @@ const DateInputForm = memo(
                   <Label htmlFor="start-date-picker">Start Date</Label>
                   <DatePicker
                     id="start-date-picker"
+                    title="Select a starting date"
                     onValueChange={handleStartDateChange}
                   />
                 </div>
@@ -469,6 +514,7 @@ const DateInputForm = memo(
                   <Label htmlFor="end-date-picker">End Date</Label>
                   <DatePicker
                     id="end-date-picker"
+                    title="Select an ending date"
                     onValueChange={handleEndDateChange}
                     disabled={!trackerData.start_date ? true : false}
                   />
@@ -485,10 +531,12 @@ DateInputForm.displayName = "DateInputForm";
 
 const DatePicker = ({
   id,
+  title,
   onValueChange,
   disabled = false,
 }: {
   id: string;
+  title?: string;
   onValueChange: (date: Date | undefined) => void;
   disabled?: boolean;
 }) => {
@@ -513,9 +561,9 @@ const DatePicker = ({
           {date ? format(date, "PPP") : <span>Pick a date</span>}
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-auto rounded-lg">
+      <DialogContent className="w-auto rounded-lg bg-accent">
         <DialogHeader>
-          <DialogTitle>Select a date</DialogTitle>
+          <DialogTitle>{title ?? "Select a date"}</DialogTitle>
         </DialogHeader>
         {/* Original version is 8.10.1 */}
         <Calendar
@@ -524,6 +572,7 @@ const DatePicker = ({
           mode="single"
           selected={date}
           onSelect={setDate}
+          className="bg-background rounded-md shadow-sm"
         />
         <DialogFooter className="flex-row gap-2">
           <DialogClose asChild>
@@ -548,7 +597,13 @@ const DatePicker = ({
   );
 };
 
-const TrackerPreview = ({ trackerData }: { trackerData: ITrackerData }) => {
+const TrackerPreview = ({
+  trackerData,
+  isSetTarget,
+}: {
+  trackerData: ITrackerData;
+  isSetTarget: boolean;
+}) => {
   const { resolvedTheme } = useTheme();
 
   return (
@@ -576,65 +631,108 @@ const TrackerPreview = ({ trackerData }: { trackerData: ITrackerData }) => {
         )}
       </div>
       <div className="grow">
-        <div className="flex justify-between">
-          <span
-            className={cn(
-              "text-muted-foreground",
-              resolvedTheme === "dark" && "text-black/70"
-            )}
-          >
-            Total expense:
-          </span>
-          <span className="font-semibold">0.00</span>
-        </div>
-        <div className="h-auto grow">
-          <AnimatePresence>
-            {trackerData.goal_amount && (
-              <motion.div
-                layout
-                initial={{
-                  opacity: 0,
-                  filter: "blur(10px)",
-                  y: -20,
-                  height: 0,
-                }}
-                animate={{
-                  opacity: 1,
-                  filter: "blur(0)",
-                  y: 0,
-                  height: "auto",
-                }}
-                exit={{
-                  opacity: 0,
-                  filter: "blur(10px)",
-                  y: -20,
-                  height: 0,
-                }}
-                transition={{
-                  duration: 0.5,
-                  ease: cubicBezier(0.25, 0.1, 0.25, 1),
-                }}
-                className="h-0 flex justify-between"
+        <AnimatePresence>
+          {(trackerData.due_date || trackerData.start_date) && (
+            <motion.div
+              layout
+              initial={{
+                opacity: 0,
+                filter: "blur(10px)",
+                y: -20,
+                height: 0,
+              }}
+              animate={{
+                opacity: 1,
+                filter: "blur(0)",
+                y: 0,
+                height: "auto",
+              }}
+              exit={{
+                opacity: 0,
+                filter: "blur(10px)",
+                y: -20,
+                height: 0,
+              }}
+              transition={{
+                duration: 0.5,
+                ease: cubicBezier(0.25, 0.1, 0.25, 1),
+              }}
+              className={cn(
+                "flex",
+                trackerData.start_date
+                  ? "gap-2 text-muted-foreground justify-end"
+                  : "h-0 justify-between"
+              )}
+            >
+              <span
+                className={cn(
+                  trackerData.start_date
+                    ? "font-bold"
+                    : resolvedTheme === "dark"
+                    ? "text-black/70"
+                    : "text-muted-foreground"
+                )}
               >
-                <span
-                  className={cn(
-                    "text-muted-foreground",
-                    resolvedTheme === "dark" && "text-black/70"
-                  )}
-                >
-                  Target:
-                </span>
-                <span className="font-semibold">
-                  {formatter.format(Number(trackerData.goal_amount))} /
-                </span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                {isSetTarget
+                  ? "Target Date"
+                  : trackerData.start_date &&
+                    date.format(new Date(trackerData.start_date))}
+              </span>
+              {trackerData.start_date && " - "}
+              <span className="font-bold">
+                {trackerData.due_date &&
+                  date.format(new Date(trackerData.due_date))}
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {trackerData.goal_amount && (
+            <motion.div
+              layout
+              initial={{
+                opacity: 0,
+                filter: "blur(10px)",
+                y: -20,
+                height: 0,
+              }}
+              animate={{
+                opacity: 1,
+                filter: "blur(0)",
+                y: 0,
+                height: "auto",
+              }}
+              exit={{
+                opacity: 0,
+                filter: "blur(10px)",
+                y: -20,
+                height: 0,
+              }}
+              transition={{
+                duration: 0.5,
+                ease: cubicBezier(0.25, 0.1, 0.25, 1),
+              }}
+              className="h-0 flex justify-between"
+            >
+              <span
+                className={cn(
+                  resolvedTheme === "dark"
+                    ? "text-black/70"
+                    : "text-muted-foreground"
+                )}
+              >
+                Target Amount
+              </span>
+              <span className="font-semibold">
+                {currency.format(Number(trackerData.goal_amount))} /
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       <div className="grow flex justify-end items-end">
         <span className="text-5xl font-extrabold">
-          {formatter.format(Number(trackerData.amount))}
+          {currency.format(Number(trackerData.amount))}
         </span>
       </div>
       <div
@@ -654,7 +752,7 @@ const TrackerPreview = ({ trackerData }: { trackerData: ITrackerData }) => {
         </span>
         <div className="bg-slate-50 text-green-500 rounded-full p-1 px-2 leading-none">
           <span>+</span>
-          {formatter.format(Number(trackerData.amount))}
+          {currency.format(Number(trackerData.amount))}
         </div>
       </div>
     </div>
@@ -696,7 +794,7 @@ const ColorIconPickerDrawer = memo(
   }) => {
     return (
       <DrawerNested>
-        <DrawerTrigger className="max-w-min border border-muted-foreground/80 rounded-sm-nested-outer p-0.5">
+        <DrawerTrigger className="max-w-min border-2 border-muted-foreground/40 rounded-sm-nested-outer p-0.5">
           <ColorIconPickerPreview
             className="w-10 h-10 rounded-sm"
             color={color}
@@ -800,43 +898,47 @@ const ColorIconPickerPreview = ({
   );
 };
 
-const AnimatedDiv = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        filter: "blur(10px)",
-        y: -20,
-        height: 0,
-        marginTop: "-1rem",
-      }}
-      animate={{
-        opacity: 1,
-        filter: "blur(0)",
-        y: 0,
-        height: "auto",
-        marginTop: 0,
-      }}
-      exit={{
-        opacity: 0,
-        filter: "blur(10px)",
-        y: -20,
-        height: 0,
-        marginTop: "-1rem",
-      }}
-      transition={{
-        duration: 0.5,
-        ease: cubicBezier(0.25, 0.1, 0.25, 1),
-      }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-};
+const AnimatedDiv = memo(
+  ({
+    children,
+    className,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) => {
+    return (
+      <motion.div
+        initial={{
+          opacity: 0,
+          filter: "blur(10px)",
+          y: -10,
+          height: 0,
+          marginTop: "-1rem",
+        }}
+        animate={{
+          opacity: 1,
+          filter: "blur(0)",
+          y: 0,
+          height: "auto",
+          marginTop: 0,
+        }}
+        exit={{
+          opacity: 0,
+          filter: "blur(10px)",
+          y: -10,
+          height: 0,
+          marginTop: "-1rem",
+        }}
+        transition={{
+          duration: 0.5,
+          opacity: { duration: 0.2 },
+          ease: cubicBezier(0.25, 0.1, 0.25, 1),
+        }}
+        className={className}
+      >
+        {children}
+      </motion.div>
+    );
+  }
+);
+AnimatedDiv.displayName = "AnimatedDiv";

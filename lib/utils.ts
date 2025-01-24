@@ -5,9 +5,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const formatter = new Intl.NumberFormat("en-PH", {
+export const currency = new Intl.NumberFormat("en-PH", {
   style: "currency",
   currency: "PHP",
+});
+
+export const date = new Intl.DateTimeFormat("en-PH", {
+  month: "short",
+  day: "numeric",
 });
 
 export const getCurrentDay = (): string => {
