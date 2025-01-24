@@ -207,6 +207,10 @@ export default AddTracker;
 type FormInputProps = {
   trackerData: ITrackerData;
   setTrackerData: React.Dispatch<React.SetStateAction<ITrackerData>>;
+  isSetTarget?: boolean;
+  setIsSetTarget?: React.Dispatch<React.SetStateAction<boolean>>;
+  isDateEnabled?: boolean;
+  setIsDateEnabled?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const TrackerFormBody = () => {
@@ -219,6 +223,8 @@ const TrackerFormBody = () => {
     due_date: "",
     goal_amount: "",
   });
+  const [isSetTarget, setIsSetTarget] = useState(false);
+  const [isDateEnabled, setIsDateEnabled] = useState(false);
 
   return (
     <div className="flex flex-col gap-4">
@@ -232,10 +238,16 @@ const TrackerFormBody = () => {
           <AmountInputForm
             trackerData={trackerData}
             setTrackerData={setTrackerData}
+            isDateEnabled={isDateEnabled}
+            isSetTarget={isSetTarget}
+            setIsSetTarget={setIsSetTarget}
           />
           <DateInputForm
             trackerData={trackerData}
             setTrackerData={setTrackerData}
+            isSetTarget={isSetTarget}
+            isDateEnabled={isDateEnabled}
+            setIsDateEnabled={setIsDateEnabled}
           />
         </div>
       </ScrollArea>
@@ -273,9 +285,13 @@ const NameColorIconInputForm = memo(
 NameColorIconInputForm.displayName = "NameColorIconInputForm";
 
 const AmountInputForm = memo(
-  ({ trackerData, setTrackerData }: FormInputProps) => {
-    const [isSetTarget, setIsSetTarget] = useState(false);
-
+  ({
+    trackerData,
+    setTrackerData,
+    isSetTarget,
+    setIsSetTarget,
+    isDateEnabled,
+  }: FormInputProps) => {
     const validateAmount = (value: string, maxAmount: number = 99999999.99) => {
       const validPattern = /^\d*\.?\d{0,2}$/;
       return validPattern.test(value) && parseFloat(value) <= maxAmount;
@@ -294,12 +310,7 @@ const AmountInputForm = memo(
     };
     return (
       <Card>
-        <CardContent
-          className={cn(
-            "pt-4 flex flex-col gap-4 h-auto",
-            isSetTarget ? "pb-4" : "pb-3"
-          )}
-        >
+        <CardContent className={cn("pt-4 flex flex-col gap-4 h-auto")}>
           <LabelInput
             label="Initial Amount"
             name="amount"
@@ -317,10 +328,11 @@ const AmountInputForm = memo(
               size="md"
               checked={isSetTarget}
               onCheckedChange={(e) => {
-                setTrackerData({ ...trackerData, goal_amount: "" });
-                setIsSetTarget(e);
+                if (!e) setTrackerData({ ...trackerData, goal_amount: "" });
+                setIsSetTarget!(e);
               }}
               aria-label="Toggle target amount input"
+              disabled={!trackerData.amount || isDateEnabled}
             />
           </div>
           <AnimatePresence>
@@ -352,7 +364,7 @@ const AmountInputForm = memo(
                   duration: 0.5,
                   ease: cubicBezier(0.25, 0.1, 0.25, 1),
                 }}
-                className="h-0 -mt-4"
+                className="h-0 flex flex-col gap-4"
               >
                 <LabelInput
                   label="Target Amount"
@@ -364,6 +376,22 @@ const AmountInputForm = memo(
                   step="0.01"
                   onChange={handleAmountChange}
                 />
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    delay: 0.2,
+                    duration: 0.4,
+                    ease: cubicBezier(0.25, 0.1, 0.25, 1),
+                  }}
+                  className="flex items-center justify-between ps-2"
+                >
+                  <Label htmlFor="target-date-picker">Target Date</Label>
+                  <DatePicker
+                    id="target-date-picker"
+                    onValueChange={(date) => {}}
+                  />
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -375,8 +403,16 @@ const AmountInputForm = memo(
 AmountInputForm.displayName = "AmountInputForm";
 
 const DateInputForm = memo(
-  ({ trackerData, setTrackerData }: FormInputProps) => {
-    const [isDateEnabled, setIsDateEnabled] = useState(false);
+  ({
+    trackerData,
+    setTrackerData,
+    isDateEnabled,
+    setIsDateEnabled,
+    isSetTarget,
+  }: FormInputProps) => {
+    if (isSetTarget) {
+      return null;
+    }
 
     const handleStartDateChange = (date: Date | undefined) => {
       setTrackerData({
@@ -407,7 +443,7 @@ const DateInputForm = memo(
                   start_date: "",
                   due_date: "",
                 });
-                setIsDateEnabled(e);
+                setIsDateEnabled!(e);
               }}
               aria-label="Toggle target amount input"
             />
@@ -441,7 +477,7 @@ const DateInputForm = memo(
                   duration: 0.5,
                   ease: cubicBezier(0.25, 0.1, 0.25, 1),
                 }}
-                className="h-0 -mt-4 flex flex-col gap-4"
+                className="h-0 flex flex-col gap-4"
               >
                 <div className="flex items-center justify-between ps-2">
                   <Label htmlFor="start-date-picker">Start Date</Label>
