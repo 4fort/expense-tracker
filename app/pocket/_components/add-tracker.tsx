@@ -15,7 +15,7 @@ import {
 import { CalendarIcon, Plus, TriangleAlert } from "lucide-react";
 import React, { memo, useEffect, useState } from "react";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
-import { cn, currency, date, getCurrentDay } from "@/lib/utils";
+import { cn, currency, datefmt, datefmt2, getCurrentDay } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTheme } from "next-themes";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,7 +23,6 @@ import { Switch } from "@/components/ui/switch";
 import { AnimatePresence, cubicBezier, motion } from "motion/react";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
 import {
   Dialog,
   DialogClose,
@@ -558,7 +557,7 @@ const DatePicker = ({
           )}
         >
           <CalendarIcon />
-          {date ? format(date, "PPP") : <span>Pick a date</span>}
+          {date ? datefmt(date).standardLong : <span>Pick a date</span>}
         </Button>
       </DialogTrigger>
       <DialogContent className="w-auto rounded-lg bg-accent">
@@ -676,12 +675,12 @@ const TrackerPreview = ({
                 {isSetTarget
                   ? "Target Date"
                   : trackerData.start_date &&
-                    date.format(new Date(trackerData.start_date))}
+                    datefmt2.format(new Date(trackerData.start_date))}
               </span>
               {trackerData.start_date && " - "}
               <span className="font-bold">
                 {trackerData.due_date &&
-                  date.format(new Date(trackerData.due_date))}
+                  datefmt2.format(new Date(trackerData.due_date))}
               </span>
             </motion.div>
           )}

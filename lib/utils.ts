@@ -10,10 +10,42 @@ export const currency = new Intl.NumberFormat("en-PH", {
   currency: "PHP",
 });
 
-export const date = new Intl.DateTimeFormat("en-PH", {
+export const datefmt2 = new Intl.DateTimeFormat("en-PH", {
   month: "short",
   day: "numeric",
 });
+
+export const datefmt = (date: Date | string) => {
+  let _date;
+  if (typeof date === "string") {
+    _date = new Date(date);
+  } else {
+    _date = date;
+  }
+  const standardLong = new Intl.DateTimeFormat("en-PH", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(_date);
+
+  const standardShort = new Intl.DateTimeFormat("en-PH", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(_date);
+
+  const standardNumeric = new Intl.DateTimeFormat("en-PH", {
+    month: "numeric",
+    day: "numeric",
+    year: "numeric",
+  }).format(_date);
+
+  return {
+    standardLong,
+    standardShort,
+    standardNumeric,
+  };
+};
 
 export const getCurrentDay = (): string => {
   const now = new Date();
