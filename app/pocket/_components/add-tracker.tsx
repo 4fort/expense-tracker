@@ -183,12 +183,11 @@ const AddTracker = ({ isTrackerEmpty: isPocketEmpty, isFreeUser }: Props) => {
       <DrawerContent
         className="min-h-[95vh] h-[97vh] max-h-[97vh] bg-accent"
         barClassName="bg-muted-foreground/10"
-        // ref={formContainerRef}
       >
         <DrawerHeader>
           <DrawerTitle className="sr-only">Add Tracker</DrawerTitle>
         </DrawerHeader>
-        <form className="flex-grow flex flex-col gap-4 px-4 pt-0 pb-8 overflow-auto">
+        <form className="h-full flex-grow flex flex-col gap-4 px-4 pt-0 pb-8 overflow-auto">
           <TrackerFormBody />
           <DrawerFooter className="p-0">
             <Button>Submit</Button>
@@ -227,9 +226,12 @@ const TrackerFormBody = () => {
   const [isDateEnabled, setIsDateEnabled] = useState(false);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="h-full flex flex-col gap-4">
       <TrackerPreview trackerData={trackerData} />
-      <ScrollArea className="max-h-[48vh] overflow-y-auto after:content-[''] before:w-full after:w-full before:h-6 after:h-6 before:bg-gradient-to-b after:bg-gradient-to-t before:from-accent after:from-accent before:via-70% after:via-70% before:to-transparent after:to-transparent before:absolute after:absolute before:-top-0.5 after:-bottom-0.5 before:left-0 after:left-0 before:z-10 after:z-10">
+      <ScrollArea
+        className="max-h-min overflow-y-auto after:content-[''] before:w-full after:w-full before:h-6 after:h-6 before:bg-gradient-to-b after:bg-gradient-to-t before:from-accent after:from-accent before:via-70% after:via-70% before:to-transparent after:to-transparent before:absolute after:absolute before:-top-0.5 after:-bottom-0.5 before:left-0 after:left-0 before:z-10 after:z-10"
+        type="auto"
+      >
         <div className="grow flex flex-col gap-2 py-4">
           <NameColorIconInputForm
             trackerData={trackerData}
@@ -242,13 +244,19 @@ const TrackerFormBody = () => {
             isSetTarget={isSetTarget}
             setIsSetTarget={setIsSetTarget}
           />
-          <DateInputForm
-            trackerData={trackerData}
-            setTrackerData={setTrackerData}
-            isSetTarget={isSetTarget}
-            isDateEnabled={isDateEnabled}
-            setIsDateEnabled={setIsDateEnabled}
-          />
+          <AnimatePresence initial={false}>
+            {!isSetTarget && (
+              <AnimatedDiv>
+                <DateInputForm
+                  trackerData={trackerData}
+                  setTrackerData={setTrackerData}
+                  isSetTarget={isSetTarget}
+                  isDateEnabled={isDateEnabled}
+                  setIsDateEnabled={setIsDateEnabled}
+                />
+              </AnimatedDiv>
+            )}
+          </AnimatePresence>
         </div>
       </ScrollArea>
     </div>
@@ -321,51 +329,27 @@ const AmountInputForm = memo(
             step="0.01"
             onChange={handleAmountChange}
           />
-          <div className="flex items-center justify-between ps-2">
-            <Label htmlFor="target-switch">Set a target</Label>
-            <Switch
-              id="target-switch"
-              size="md"
-              checked={isSetTarget}
-              onCheckedChange={(e) => {
-                if (!e) setTrackerData({ ...trackerData, goal_amount: "" });
-                setIsSetTarget!(e);
-              }}
-              aria-label="Toggle target amount input"
-              disabled={!trackerData.amount || isDateEnabled}
-            />
-          </div>
+          <AnimatePresence initial={false}>
+            {!isDateEnabled && (
+              <AnimatedDiv className="flex items-center justify-between ps-2">
+                <Label htmlFor="target-switch">Set a target</Label>
+                <Switch
+                  id="target-switch"
+                  size="md"
+                  checked={isSetTarget}
+                  onCheckedChange={(e) => {
+                    if (!e) setTrackerData({ ...trackerData, goal_amount: "" });
+                    setIsSetTarget!(e);
+                  }}
+                  aria-label="Toggle target amount input"
+                  disabled={!trackerData.amount}
+                />
+              </AnimatedDiv>
+            )}
+          </AnimatePresence>
           <AnimatePresence>
             {isSetTarget && (
-              <motion.div
-                layout
-                initial={{
-                  opacity: 0,
-                  filter: "blur(10px)",
-                  y: -20,
-                  height: 0,
-                  marginTop: "-1rem",
-                }}
-                animate={{
-                  opacity: 1,
-                  filter: "blur(0)",
-                  y: 0,
-                  height: "auto",
-                  marginTop: 0,
-                }}
-                exit={{
-                  opacity: 0,
-                  filter: "blur(10px)",
-                  y: -20,
-                  height: 0,
-                  marginTop: "-1rem",
-                }}
-                transition={{
-                  duration: 0.5,
-                  ease: cubicBezier(0.25, 0.1, 0.25, 1),
-                }}
-                className="h-0 flex flex-col gap-4"
-              >
+              <AnimatedDiv className="h-0 flex flex-col gap-4">
                 <LabelInput
                   label="Target Amount"
                   name="goal_amount"
@@ -392,7 +376,7 @@ const AmountInputForm = memo(
                     onValueChange={(date) => {}}
                   />
                 </motion.div>
-              </motion.div>
+              </AnimatedDiv>
             )}
           </AnimatePresence>
         </CardContent>
@@ -408,12 +392,7 @@ const DateInputForm = memo(
     setTrackerData,
     isDateEnabled,
     setIsDateEnabled,
-    isSetTarget,
   }: FormInputProps) => {
-    if (isSetTarget) {
-      return null;
-    }
-
     const handleStartDateChange = (date: Date | undefined) => {
       setTrackerData({
         ...trackerData,
@@ -484,7 +463,6 @@ const DateInputForm = memo(
                   <DatePicker
                     id="start-date-picker"
                     onValueChange={handleStartDateChange}
-                    disabled={!trackerData.due_date ? true : false}
                   />
                 </div>
                 <div className="flex items-center justify-between ps-2">
@@ -492,7 +470,7 @@ const DateInputForm = memo(
                   <DatePicker
                     id="end-date-picker"
                     onValueChange={handleEndDateChange}
-                    disabled={!trackerData.goal_amount ? true : false}
+                    disabled={!trackerData.start_date ? true : false}
                   />
                 </div>
               </motion.div>
@@ -539,6 +517,7 @@ const DatePicker = ({
         <DialogHeader>
           <DialogTitle>Select a date</DialogTitle>
         </DialogHeader>
+        {/* Original version is 8.10.1 */}
         <Calendar
           fixedWeeks
           disabled={disabled}
@@ -818,5 +797,46 @@ const ColorIconPickerPreview = ({
         <DynamicIcon className="w-full h-full" name={icon} />
       </div>
     </div>
+  );
+};
+
+const AnimatedDiv = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return (
+    <motion.div
+      initial={{
+        opacity: 0,
+        filter: "blur(10px)",
+        y: -20,
+        height: 0,
+        marginTop: "-1rem",
+      }}
+      animate={{
+        opacity: 1,
+        filter: "blur(0)",
+        y: 0,
+        height: "auto",
+        marginTop: 0,
+      }}
+      exit={{
+        opacity: 0,
+        filter: "blur(10px)",
+        y: -20,
+        height: 0,
+        marginTop: "-1rem",
+      }}
+      transition={{
+        duration: 0.5,
+        ease: cubicBezier(0.25, 0.1, 0.25, 1),
+      }}
+      className={className}
+    >
+      {children}
+    </motion.div>
   );
 };
