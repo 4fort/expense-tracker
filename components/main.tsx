@@ -18,7 +18,7 @@ const Main = ({
   children,
   className,
 }: Readonly<{
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
 }>) => {
   const pathname = usePathname();

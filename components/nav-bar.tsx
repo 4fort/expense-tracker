@@ -6,30 +6,33 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { DynamicIcon, IconName } from "lucide-react/dynamic";
 
 const navLinks = [
   {
-    icon: [<Home key={0} />, <Home className="text-primary" key={1} />],
+    icon: "home",
     text: "Home",
     href: "/",
   },
   {
-    icon: [
-      <WalletCards key={0} />,
-      <WalletCards className="text-primary" key={1} />,
-    ],
+    icon: "table-properties",
+    text: "Expenses",
+    href: "/expense",
+  },
+  {
+    icon: "wallet-cards",
     text: "Pocket",
     href: "/pocket",
   },
   {
-    icon: [<User2 key={0} />, <User2 className="text-primary" key={1} />],
+    icon: "user-2",
     text: "Profile",
     href: "/profile",
   },
 ];
 
 const excludedPaths = ["/login", "/signup", "/forgot-password"];
-const includedPaths = ["/profile", "/pocket", "/"];
+const includedPaths = Array.from(new Set(navLinks.map(({ href }) => href)));
 
 export const NavBar = () => {
   const pathname = usePathname();
@@ -147,7 +150,10 @@ const NavSingleLink = ({
           isActive ? "text-zinc-900" : ""
         )}
       >
-        {isActive ? icon[1] : icon[0]}
+        <DynamicIcon
+          name={icon as IconName}
+          className={cn(isActive && "text-foreground")}
+        />
         <span className={cn("text-xs", isActive && "text-foreground")}>
           {text}
         </span>
