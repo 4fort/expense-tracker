@@ -6,15 +6,14 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerNested,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Plus, TriangleAlert } from "lucide-react";
-import React, { memo, useState } from "react";
+import { CalendarIcon, Plus, TriangleAlert } from "lucide-react";
+import React, { memo, useEffect, useState } from "react";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
 import { cn, formatter, getCurrentDay } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -23,6 +22,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { AnimatePresence, cubicBezier, motion } from "motion/react";
 import { Label } from "@/components/ui/label";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface ITrackerData {
   name: string;
@@ -176,10 +186,9 @@ const AddTracker = ({ isTrackerEmpty: isPocketEmpty, isFreeUser }: Props) => {
         // ref={formContainerRef}
       >
         <DrawerHeader>
-          <DrawerTitle>Add Tracker</DrawerTitle>
-          <DrawerDescription></DrawerDescription>
+          <DrawerTitle className="sr-only">Add Tracker</DrawerTitle>
         </DrawerHeader>
-        <form className="flex-grow flex flex-col p-4 overflow-auto">
+        <form className="flex-grow flex flex-col gap-4 px-4 pt-0 pb-8 overflow-auto">
           <TrackerFormBody />
           <DrawerFooter className="p-0">
             <Button>Submit</Button>
@@ -214,13 +223,17 @@ const TrackerFormBody = () => {
   return (
     <div className="flex flex-col gap-4">
       <TrackerPreview trackerData={trackerData} />
-      <ScrollArea className="max-h-[40vh] overflow-y-auto">
-        <div className="grow flex flex-col gap-2">
+      <ScrollArea className="max-h-[48vh] overflow-y-auto after:content-[''] before:w-full after:w-full before:h-6 after:h-6 before:bg-gradient-to-b after:bg-gradient-to-t before:from-accent after:from-accent before:via-70% after:via-70% before:to-transparent after:to-transparent before:absolute after:absolute before:-top-0.5 after:-bottom-0.5 before:left-0 after:left-0 before:z-10 after:z-10">
+        <div className="grow flex flex-col gap-2 py-4">
           <NameColorIconInputForm
             trackerData={trackerData}
             setTrackerData={setTrackerData}
           />
           <AmountInputForm
+            trackerData={trackerData}
+            setTrackerData={setTrackerData}
+          />
+          <DateInputForm
             trackerData={trackerData}
             setTrackerData={setTrackerData}
           />
@@ -283,7 +296,7 @@ const AmountInputForm = memo(
       <Card>
         <CardContent
           className={cn(
-            "pt-4 flex flex-col gap-2 h-auto",
+            "pt-4 flex flex-col gap-4 h-auto",
             isSetTarget ? "pb-4" : "pb-3"
           )}
         >
@@ -310,49 +323,50 @@ const AmountInputForm = memo(
               aria-label="Toggle target amount input"
             />
           </div>
-          <div className="h-auto grow">
-            <AnimatePresence>
-              {isSetTarget && (
-                <motion.div
-                  layout
-                  initial={{
-                    opacity: 0,
-                    filter: "blur(10px)",
-                    y: -20,
-                    height: 0,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    filter: "blur(0)",
-                    y: 0,
-                    height: "auto",
-                  }}
-                  exit={{
-                    opacity: 0,
-                    filter: "blur(10px)",
-                    y: -20,
-                    height: 0,
-                  }}
-                  transition={{
-                    duration: 0.5,
-                    ease: cubicBezier(0.25, 0.1, 0.25, 1),
-                  }}
-                  className="h-0"
-                >
-                  <LabelInput
-                    label="Target Amount"
-                    name="goal_amount"
-                    type="tel"
-                    placeholder="Enter target amount"
-                    inputMode="decimal"
-                    value={trackerData.goal_amount}
-                    step="0.01"
-                    onChange={handleAmountChange}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          <AnimatePresence>
+            {isSetTarget && (
+              <motion.div
+                layout
+                initial={{
+                  opacity: 0,
+                  filter: "blur(10px)",
+                  y: -20,
+                  height: 0,
+                  marginTop: "-1rem",
+                }}
+                animate={{
+                  opacity: 1,
+                  filter: "blur(0)",
+                  y: 0,
+                  height: "auto",
+                  marginTop: 0,
+                }}
+                exit={{
+                  opacity: 0,
+                  filter: "blur(10px)",
+                  y: -20,
+                  height: 0,
+                  marginTop: "-1rem",
+                }}
+                transition={{
+                  duration: 0.5,
+                  ease: cubicBezier(0.25, 0.1, 0.25, 1),
+                }}
+                className="h-0 -mt-4"
+              >
+                <LabelInput
+                  label="Target Amount"
+                  name="goal_amount"
+                  type="tel"
+                  placeholder="Enter target amount"
+                  inputMode="decimal"
+                  value={trackerData.goal_amount}
+                  step="0.01"
+                  onChange={handleAmountChange}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </CardContent>
       </Card>
     );
@@ -360,13 +374,172 @@ const AmountInputForm = memo(
 );
 AmountInputForm.displayName = "AmountInputForm";
 
+const DateInputForm = memo(
+  ({ trackerData, setTrackerData }: FormInputProps) => {
+    const [isDateEnabled, setIsDateEnabled] = useState(false);
+
+    const handleStartDateChange = (date: Date | undefined) => {
+      setTrackerData({
+        ...trackerData,
+        start_date: date ? date.toISOString() : "",
+      });
+    };
+
+    const handleEndDateChange = (date: Date | undefined) => {
+      setTrackerData({
+        ...trackerData,
+        due_date: date ? date.toISOString() : "",
+      });
+    };
+
+    return (
+      <Card>
+        <CardContent className="pt-4 flex flex-col gap-4">
+          <div className="flex items-center justify-between ps-2">
+            <Label htmlFor="date-toggle-switch">Add dates</Label>
+            <Switch
+              id="date-toggle-switch"
+              size="md"
+              checked={isDateEnabled}
+              onCheckedChange={(e) => {
+                setTrackerData({
+                  ...trackerData,
+                  start_date: "",
+                  due_date: "",
+                });
+                setIsDateEnabled(e);
+              }}
+              aria-label="Toggle target amount input"
+            />
+          </div>
+          <AnimatePresence>
+            {isDateEnabled && (
+              <motion.div
+                layout
+                initial={{
+                  opacity: 0,
+                  filter: "blur(10px)",
+                  y: -20,
+                  height: 0,
+                  marginTop: "-1rem",
+                }}
+                animate={{
+                  opacity: 1,
+                  filter: "blur(0)",
+                  y: 0,
+                  height: "auto",
+                  marginTop: 0,
+                }}
+                exit={{
+                  opacity: 0,
+                  filter: "blur(10px)",
+                  y: -20,
+                  height: 0,
+                  marginTop: "-1rem",
+                }}
+                transition={{
+                  duration: 0.5,
+                  ease: cubicBezier(0.25, 0.1, 0.25, 1),
+                }}
+                className="h-0 -mt-4 flex flex-col gap-4"
+              >
+                <div className="flex items-center justify-between ps-2">
+                  <Label htmlFor="start-date-picker">Start Date</Label>
+                  <DatePicker
+                    id="start-date-picker"
+                    onValueChange={handleStartDateChange}
+                    disabled={!trackerData.due_date ? true : false}
+                  />
+                </div>
+                <div className="flex items-center justify-between ps-2">
+                  <Label htmlFor="end-date-picker">End Date</Label>
+                  <DatePicker
+                    id="end-date-picker"
+                    onValueChange={handleEndDateChange}
+                    disabled={!trackerData.goal_amount ? true : false}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </CardContent>
+      </Card>
+    );
+  }
+);
+DateInputForm.displayName = "DateInputForm";
+
+const DatePicker = ({
+  id,
+  onValueChange,
+  disabled = false,
+}: {
+  id: string;
+  onValueChange: (date: Date | undefined) => void;
+  disabled?: boolean;
+}) => {
+  const [date, setDate] = useState<Date>();
+
+  useEffect(() => {
+    onValueChange(date);
+  }, [date]);
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild id={id} disabled={disabled}>
+        <Button
+          type="button"
+          variant={"outline"}
+          className={cn(
+            "w-[240px] justify-start text-left font-normal",
+            !date && "text-muted-foreground"
+          )}
+        >
+          <CalendarIcon />
+          {date ? format(date, "PPP") : <span>Pick a date</span>}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="w-auto rounded-lg">
+        <DialogHeader>
+          <DialogTitle>Select a date</DialogTitle>
+        </DialogHeader>
+        <Calendar
+          fixedWeeks
+          disabled={disabled}
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+        />
+        <DialogFooter className="flex-row gap-2">
+          <DialogClose asChild>
+            <Button
+              className="grow"
+              type="button"
+              variant="destructive"
+              onClick={() => setDate(undefined)}
+              disabled={!date}
+            >
+              Remove
+            </Button>
+          </DialogClose>
+          <DialogClose asChild>
+            <Button className="grow" type="button" variant="outline">
+              Confirm
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 const TrackerPreview = ({ trackerData }: { trackerData: ITrackerData }) => {
   const { resolvedTheme } = useTheme();
 
   return (
     <div
       className={cn(
-        "w-full max-w-96 p-3 rounded-lg flex flex-col gap-2 font-semibold text-black",
+        "w-full max-w-96 self-center p-3 rounded-lg flex flex-col gap-2 font-semibold text-black",
         resolvedTheme === "dark"
           ? `bg-${trackerData.color}-300`
           : `bg-${trackerData.color}-200`
