@@ -1,6 +1,8 @@
 "use server";
 
-import { TTrackerExtend } from "@/types/TTrackerExtend";
+import { TTracker } from "@/types/TTracker";
+import { TTrackerExtend, TTrackerExtension } from "@/types/TTrackerExtend";
+import { TTrackerTransaction } from "@/types/TTrackerTransaction";
 import { createClient } from "@/utils/supabase/server";
 
 export default async function getUserTrackers() {
@@ -19,12 +21,36 @@ export default async function getUserTrackers() {
     .select(
       `
       *,
-      extended_tracker(*)
+      tracker_extensions(*),
+      tracker_transactions(*)
     `
     )
     .eq("user_id", user_id);
 
-  const trackers = data as TTrackerExtend[];
+  console.log(data);
+
+  const trackers: TTracker[] = data!.map((tracker: TTracker) => {
+    const amount = tracker.tracker_transactions.reduce(
+      (sum, transaction) => sum + transaction.amount,
+      0
+    );
+    const latest_transaction_data =
+      tracker.tracker_transactions[tracker.tracker_transactions.length - 1];
+    return {
+      id: tracker.id,
+      name: tracker.name,
+      icon: tracker.icon,
+      amount,
+      color: tracker.color,
+      created_at: tracker.created_at,
+      tracker_extensions: tracker.tracker_extensions as TTrackerExtension,
+      tracker_transactions:
+        tracker.tracker_transactions as TTrackerTransaction[],
+      latest_transaction: latest_transaction_data as TTrackerTransaction,
+    };
+  });
+
+  console.log("Trackers:", trackers, error);
 
   return { data: trackers, error };
 }

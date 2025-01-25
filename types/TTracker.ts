@@ -1,8 +1,16 @@
+import { TTrackerColors } from "@/app/pocket/_types/TTrackerColors";
+import { IconName } from "lucide-react/dynamic";
+import { TTrackerExtension } from "./TTrackerExtend";
+import { TTrackerTransaction } from "./TTrackerTransaction";
+
 export type TTracker = {
   id: number;
   name: string;
-  icon: string;
+  icon: IconName;
   amount: number;
-  color: string;
+  color: TTrackerColors;
   created_at: string;
+  tracker_extensions: TTrackerExtension | null;
+  tracker_transactions: TTrackerTransaction[];
+  latest_transaction: TTrackerTransaction | null;
 };

@@ -3,12 +3,12 @@
 import Main from "@/components/main";
 import TitleHeader from "@/components/title-header";
 import React from "react";
-import usePocketPersist from "@/hooks/useTrackerPersist";
+import useTrackerPersist from "@/hooks/useTrackerPersist";
 import useAuthPersist from "@/hooks/useAuthPersist";
 
 export default function PocketPage() {
   const { user } = useAuthPersist();
-  const { trackers, isTrackerEmpty } = usePocketPersist();
+  const { trackers, isTrackerEmpty } = useTrackerPersist();
 
   console.log(trackers);
 

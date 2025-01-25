@@ -1,20 +1,34 @@
 "use client";
 
-import { usePocketStore } from "@/store/useTrackerStore";
+import { useTrackerStore } from "@/store/useTrackerStore";
+import { TTracker } from "@/types/TTracker";
 import { useEffect } from "react";
 
-export default function usePocketPersist() {
-  const { trackers, error, loading, retrievePocketData } = usePocketStore();
+export default function useTrackerPersist() {
+  const {
+    trackers,
+    error,
+    loading,
+    retrieveTrackerData,
+    revalidateTrackerData,
+    addOneTracker,
+  } = useTrackerStore();
 
   useEffect(() => {
-    retrievePocketData();
+    revalidateTrackerData();
+    console.log("Revalidated tracker data");
   }, []);
+
+  const cacheOneTracker = (data: TTracker) => {
+    addOneTracker(data);
+  };
 
   return {
     trackers,
     isTrackerEmpty: trackers.length === 0,
     error,
     loading,
-    retrievePocketData,
+    retrieveTrackerData,
+    cacheOneTracker,
   };
 }

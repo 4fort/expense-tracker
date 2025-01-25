@@ -10,11 +10,6 @@ export const currency = new Intl.NumberFormat("en-PH", {
   currency: "PHP",
 });
 
-export const datefmt2 = new Intl.DateTimeFormat("en-PH", {
-  month: "short",
-  day: "numeric",
-});
-
 export const datefmt = (date: Date | string) => {
   let _date;
   if (typeof date === "string") {
@@ -22,6 +17,12 @@ export const datefmt = (date: Date | string) => {
   } else {
     _date = date;
   }
+
+  const short = new Intl.DateTimeFormat("en-PH", {
+    month: "short",
+    day: "numeric",
+  }).format(_date);
+
   const standardLong = new Intl.DateTimeFormat("en-PH", {
     month: "long",
     day: "numeric",
@@ -40,6 +41,18 @@ export const datefmt = (date: Date | string) => {
     year: "numeric",
   }).format(_date);
 
+  const mediumTime = () => {
+    const options: Intl.DateTimeFormatOptions = {
+      month: "short", // "Oct"
+      day: "numeric", // "12"
+      hour: "numeric", // "1"
+      minute: "2-digit", // "37"
+      hour12: true, // "PM"
+    };
+    const tmp_date = new Date(_date);
+    return tmp_date.toLocaleString("en-US", options);
+  };
+
   const addOneDay = () => {
     const tmp_date = new Date(_date);
     const _addOneDay = tmp_date.setDate(tmp_date.getDate() + 1);
@@ -47,9 +60,11 @@ export const datefmt = (date: Date | string) => {
   };
 
   return {
+    short,
     standardLong,
     standardShort,
     standardNumeric,
+    mediumTime,
     addOneDay,
   };
 };

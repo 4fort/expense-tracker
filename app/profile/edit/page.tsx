@@ -26,7 +26,7 @@ import {
 import { TUserData } from "@/types/TUserData";
 import { AnimatePresence, motion } from "motion/react";
 import React, { useActionState, useEffect, useRef, useState } from "react";
-import { changePassword, verifyPassword } from "./action";
+import { changePassword, verifyPassword } from "./actions";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import useAuthPersist from "@/hooks/useAuthPersist";

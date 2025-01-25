@@ -1,7 +1,7 @@
 "use client";
 
 import LabelInput from "@/components/label-input";
-import { Button } from "@/components/ui/button";
+import { Button, MotionButton } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -12,10 +12,10 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { CalendarIcon, Plus, TriangleAlert } from "lucide-react";
-import React, { memo, useEffect, useState } from "react";
+import { CalendarIcon, Loader2, Plus, TriangleAlert } from "lucide-react";
+import React, { memo, useActionState, useEffect, useState } from "react";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
-import { cn, currency, datefmt, datefmt2, getCurrentDay } from "@/lib/utils";
+import { cn, currency, datefmt, getCurrentDay } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTheme } from "next-themes";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,26 +32,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Matcher } from "react-day-picker";
-
-interface ITrackerData {
-  name: string;
-  amount: number | string;
-  icon: IconName;
-  color: TTrackerColors;
-  start_date?: string;
-  due_date?: string;
-  goal_amount?: number | string;
-}
-
-type TTrackerColors =
-  | "green"
-  | "sky"
-  | "rose"
-  | "orange"
-  | "yellow"
-  | "violet"
-  | "slate";
+import { addTracker } from "../actions";
+import { ITrackerData } from "../_types/ITrackerData";
+import { TTrackerColors } from "../_types/TTrackerColors";
+import useTrackerPersist from "@/hooks/useTrackerPersist";
+import { TTrackerExtend } from "@/types/TTrackerExtend";
+import { AnimatedDiv } from "@/components/motion-div";
 
 const iconList: { name: IconName; category: string }[] = [
   { name: "piggy-bank", category: "finance" },
@@ -149,13 +135,115 @@ const colorList: TTrackerColors[] = [
 type Props = {
   isTrackerEmpty: boolean;
   isFreeUser: boolean;
+  loading: boolean;
 };
 
-const AddTracker = ({ isTrackerEmpty: isPocketEmpty, isFreeUser }: Props) => {
+const AddTracker = ({ isTrackerEmpty, isFreeUser, loading }: Props) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [trackerData, setTrackerData] = useState<ITrackerData>({
+    name: "",
+    amount: "",
+    icon: "piggy-bank",
+    color: "green",
+    start_date: "",
+    due_date: "",
+    goal_amount: "",
+  });
+  const [isNameValid, setIsNameValid] = useState("");
+  const [isAmountValid, setIsAmountValid] = useState("");
+  const [state, formAction, isPending] = useActionState(addTracker, {
+    error: [],
+    data: null,
+  });
+  const { cacheOneTracker } = useTrackerPersist();
+
+  const handleSubmit = async () => {
+    console.log(trackerData);
+    if (!trackerData.name) {
+      setIsNameValid("Name is required");
+    } else {
+      setIsNameValid("");
+    }
+
+    if (!trackerData.amount) {
+      setIsAmountValid("Amount is required");
+      return;
+    } else {
+      setIsAmountValid("");
+    }
+
+    if (trackerData.amount && trackerData.name) {
+      const formData = new FormData();
+      formData.append("name", trackerData.name);
+      formData.append("amount", trackerData.amount.toString());
+      formData.append("icon", trackerData.icon);
+      formData.append("color", trackerData.color);
+      formData.append("start_date", trackerData.start_date ?? "");
+      formData.append("due_date", trackerData.due_date ?? "");
+      formData.append(
+        "goal_amount",
+        trackerData.goal_amount ? trackerData.goal_amount.toString() : ""
+      );
+
+      formAction(formData);
+
+      setTrackerData({
+        name: "",
+        amount: "",
+        icon: "piggy-bank",
+        color: "green",
+        start_date: "",
+        due_date: "",
+        goal_amount: "",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (state.data && !isPending) {
+      console.log("Tracker added successfully");
+      console.log(state);
+
+      if (state.error.length <= 0) {
+        cacheOneTracker(state.data as TTrackerExtend);
+        setIsOpen(false);
+      }
+    }
+  }, [state.data, isPending]);
+
   return (
-    <Drawer repositionInputs={false}>
+    <Drawer
+      repositionInputs={false}
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      onAnimationEnd={() => {
+        setTrackerData({
+          name: "",
+          amount: "",
+          icon: "piggy-bank",
+          color: "green",
+          start_date: "",
+          due_date: "",
+          goal_amount: "",
+        });
+        setIsNameValid("");
+        setIsAmountValid("");
+      }}
+    >
       <DrawerTrigger asChild>
-        {isPocketEmpty ? (
+        {loading ? (
+          <button disabled className="grid grid-cols-1 gap-4">
+            {[0, 1, 2, 3, 4]
+              .map((_, index) => (
+                <div
+                  key={index}
+                  className="w-full max-w-96 h-52 bg-muted-foreground/20 rounded-md animate-pulse"
+                  style={{ opacity: index - 0.7 }}
+                />
+              ))
+              .reverse()}
+          </button>
+        ) : isTrackerEmpty ? (
           <button className="h-48 p-4 flex flex-col items-center justify-center rounded-md border-2 border-border border-dashed">
             <p className="text-muted-foreground">
               This is where you can view and keep track on your Budget, Savings,
@@ -172,12 +260,26 @@ const AddTracker = ({ isTrackerEmpty: isPocketEmpty, isFreeUser }: Props) => {
             )}
           </button>
         ) : (
-          <Button
+          <MotionButton
             className="absolute bottom-24 right-0 left-0 mx-auto w-28 rounded-full"
             size="lg"
+            variant="floating"
+            initial={{ scale: 0.8, opacity: 0, filter: "blur(10px)" }}
+            animate={{
+              scale: 1,
+              opacity: 1,
+              filter: "blur(0)",
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 260,
+              damping: 20,
+              duration: 0.6,
+              filter: { duration: 0.4 },
+            }}
           >
             <Plus />
-          </Button>
+          </MotionButton>
         )}
       </DrawerTrigger>
       <DrawerContent
@@ -187,12 +289,27 @@ const AddTracker = ({ isTrackerEmpty: isPocketEmpty, isFreeUser }: Props) => {
         <DrawerHeader className="relative none p-1 before:content-[''] before:w-full before:h-4 before:bg-gradient-to-b before:from-accent before:via-70% before:to-transparent before:absolute before:-bottom-4 before:left-0 before:z-10">
           <DrawerTitle className="sr-only">Add Tracker</DrawerTitle>
         </DrawerHeader>
-        <form className="h-full flex-grow flex flex-col gap-4 px-4 pt-3 pb-8 overflow-auto">
-          <TrackerFormBody />
+        <form
+          action={handleSubmit}
+          className="h-full flex-grow flex flex-col gap-4 px-4 pt-3 pb-8 overflow-auto"
+        >
+          <TrackerFormBody
+            trackerData={trackerData}
+            setTrackerData={setTrackerData}
+            isNameValid={isNameValid}
+            setIsNameValid={setIsNameValid}
+            isAmountValid={isAmountValid}
+            setIsAmountValid={setIsAmountValid}
+          />
           <DrawerFooter className="p-0">
-            <Button>Submit</Button>
+            <Button type="submit" size="lg" disabled={isPending}>
+              {isPending && <Loader2 className="animate-spin" />}
+              {isPending ? "Adding tracker" : "Add Tracker"}
+            </Button>
             <DrawerClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline" size="lg">
+                Cancel
+              </Button>
             </DrawerClose>
           </DrawerFooter>
         </form>
@@ -212,16 +329,24 @@ type FormInputProps = {
   setIsDateEnabled?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const TrackerFormBody = () => {
-  const [trackerData, setTrackerData] = useState<ITrackerData>({
-    name: "",
-    amount: "",
-    icon: "piggy-bank",
-    color: "green",
-    start_date: "",
-    due_date: "",
-    goal_amount: "",
-  });
+type FormNameInputProps = FormInputProps & {
+  isNameValid: string;
+  setIsNameValid: React.Dispatch<React.SetStateAction<string>>;
+};
+
+type FormAmountInputProps = FormInputProps & {
+  isAmountValid: string;
+  setIsAmountValid: React.Dispatch<React.SetStateAction<string>>;
+};
+
+const TrackerFormBody = ({
+  trackerData,
+  setTrackerData,
+  isNameValid,
+  setIsNameValid,
+  isAmountValid,
+  setIsAmountValid,
+}: FormInputProps & FormNameInputProps & FormAmountInputProps) => {
   const [isSetTarget, setIsSetTarget] = useState(false);
   const [isDateEnabled, setIsDateEnabled] = useState(false);
 
@@ -236,6 +361,8 @@ const TrackerFormBody = () => {
           <NameColorIconInputForm
             trackerData={trackerData}
             setTrackerData={setTrackerData}
+            isNameValid={isNameValid}
+            setIsNameValid={setIsNameValid}
           />
           <AmountInputForm
             trackerData={trackerData}
@@ -243,6 +370,8 @@ const TrackerFormBody = () => {
             isDateEnabled={isDateEnabled}
             isSetTarget={isSetTarget}
             setIsSetTarget={setIsSetTarget}
+            isAmountValid={isAmountValid}
+            setIsAmountValid={setIsAmountValid}
           />
           <AnimatePresence initial={false}>
             {!isSetTarget && (
@@ -264,12 +393,18 @@ const TrackerFormBody = () => {
 };
 
 const NameColorIconInputForm = memo(
-  ({ trackerData, setTrackerData }: FormInputProps) => {
+  ({
+    trackerData,
+    setTrackerData,
+    isNameValid,
+    setIsNameValid,
+  }: FormNameInputProps) => {
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const maxChars = 14;
-      if (e.target.value.length <= maxChars) {
-        setTrackerData({ ...trackerData, name: e.target.value });
-      }
+      // const maxChars = 20;
+      // if (e.target.value.length <= maxChars) {
+      setIsNameValid("");
+      setTrackerData({ ...trackerData, name: e.target.value });
+      // }
     };
     return (
       <Card>
@@ -284,6 +419,8 @@ const NameColorIconInputForm = memo(
             placeholder="Enter tracker name"
             value={trackerData.name}
             onChange={handleNameChange}
+            error={!!isNameValid}
+            errorMessage={isNameValid}
           />
         </CardContent>
       </Card>
@@ -299,7 +436,9 @@ const AmountInputForm = memo(
     isSetTarget,
     setIsSetTarget,
     isDateEnabled,
-  }: FormInputProps) => {
+    isAmountValid,
+    setIsAmountValid,
+  }: FormInputProps & FormAmountInputProps) => {
     const [isTargetAmountValid, setIsTargetAmountValid] = useState("");
 
     const validateAmount = (value: string, maxAmount: number = 99999999.99) => {
@@ -323,6 +462,7 @@ const AmountInputForm = memo(
       if (value === "" || validateAmount(value)) {
         const field = e.target.name;
         setTrackerData({ ...trackerData, [field]: value });
+        setIsAmountValid("");
 
         if (field === "goal_amount") {
           if (!validateTargetAmount(value)) {
@@ -354,6 +494,8 @@ const AmountInputForm = memo(
             value={trackerData.amount}
             step="0.01"
             onChange={handleAmountChange}
+            error={!!isAmountValid}
+            errorMessage={isAmountValid}
           />
           <AnimatePresence initial={false}>
             {!isDateEnabled && (
@@ -652,7 +794,9 @@ const TrackerPreview = ({
           <DynamicIcon className="w-full h-full" name={trackerData.icon} />
         </div>
         {trackerData.name ? (
-          <div className="text-lg font-bold">{trackerData.name}</div>
+          <div className="text-lg font-bold max-w-64 whitespace-nowrap overflow-hidden text-ellipsis">
+            {trackerData.name}
+          </div>
         ) : (
           <div className="text-muted-foreground font-bold">Tracker Name</div>
         )}
@@ -703,12 +847,12 @@ const TrackerPreview = ({
                 {isSetTarget
                   ? "Target Date"
                   : trackerData.start_date &&
-                    datefmt2.format(new Date(trackerData.start_date))}
+                    datefmt(new Date(trackerData.start_date)).short}
               </span>
               {trackerData.start_date && " - "}
               <span className="font-bold">
                 {trackerData.due_date &&
-                  datefmt2.format(new Date(trackerData.due_date))}
+                  datefmt(new Date(trackerData.due_date)).short}
               </span>
             </motion.div>
           )}
@@ -924,48 +1068,3 @@ const ColorIconPickerPreview = ({
     </div>
   );
 };
-
-const AnimatedDiv = memo(
-  ({
-    children,
-    className,
-  }: {
-    children: React.ReactNode;
-    className?: string;
-  }) => {
-    return (
-      <motion.div
-        initial={{
-          opacity: 0,
-          filter: "blur(10px)",
-          y: -10,
-          height: 0,
-          marginTop: "-1rem",
-        }}
-        animate={{
-          opacity: 1,
-          filter: "blur(0)",
-          y: 0,
-          height: "auto",
-          marginTop: 0,
-        }}
-        exit={{
-          opacity: 0,
-          filter: "blur(10px)",
-          y: -10,
-          height: 0,
-          marginTop: "-1rem",
-        }}
-        transition={{
-          duration: 0.5,
-          opacity: { duration: 0.2 },
-          ease: cubicBezier(0.25, 0.1, 0.25, 1),
-        }}
-        className={className}
-      >
-        {children}
-      </motion.div>
-    );
-  }
-);
-AnimatedDiv.displayName = "AnimatedDiv";
