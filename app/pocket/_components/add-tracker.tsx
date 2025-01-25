@@ -22,7 +22,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { AnimatePresence, cubicBezier, motion } from "motion/react";
 import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar, CalendarProps } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogClose,
@@ -32,6 +32,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Matcher } from "react-day-picker";
 
 interface ITrackerData {
   name: string;
@@ -228,7 +229,7 @@ const TrackerFormBody = () => {
     <div className="h-full flex flex-col gap-4">
       <TrackerPreview trackerData={trackerData} isSetTarget={isSetTarget} />
       <ScrollArea
-        className="max-h-min overflow-y-auto before:content-[''] before:w-full before:h-6 before:bg-gradient-to-b before:from-accent before:via-70% before:to-transparent before:absolute before:-top-0.5 before:left-0 before:z-10 after:content-[''] after:w-full after:h-6 after:bg-gradient-to-t after:from-accent after:via-70% after:to-transparent after:absolute after:-bottom-0.5 after:left-0 after:z-10"
+        className="max-h-min before:content-[''] before:w-full before:h-6 before:bg-gradient-to-b before:from-accent before:via-70% before:to-transparent before:absolute before:-top-0.5 before:left-0 before:z-10 after:content-[''] after:w-full after:h-6 after:bg-gradient-to-t after:from-accent after:via-70% after:to-transparent after:absolute after:-bottom-0.5 after:left-0 after:z-10"
         type="auto"
       >
         <div className="grow flex flex-col gap-2 py-4">
@@ -406,8 +407,14 @@ const AmountInputForm = memo(
                   <DatePicker
                     id="target-date-picker"
                     title="Select a target date"
+                    startMonth={new Date()}
                     onValueChange={handleTargetDateChange}
                     disabled={!trackerData.goal_amount ? true : false}
+                    defaultMonth={
+                      trackerData.due_date
+                        ? new Date(trackerData.due_date)
+                        : undefined
+                    }
                   />
                 </motion.div>
               </AnimatedDiv>
@@ -507,6 +514,11 @@ const DateInputForm = memo(
                     id="start-date-picker"
                     title="Select a starting date"
                     onValueChange={handleStartDateChange}
+                    defaultMonth={
+                      trackerData.start_date
+                        ? new Date(trackerData.start_date)
+                        : undefined
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between ps-2">
@@ -516,6 +528,20 @@ const DateInputForm = memo(
                     title="Select an ending date"
                     onValueChange={handleEndDateChange}
                     disabled={!trackerData.start_date ? true : false}
+                    hidden={[
+                      {
+                        before: trackerData.start_date
+                          ? datefmt(trackerData.start_date).addOneDay()
+                          : new Date(),
+                      },
+                    ]}
+                    defaultMonth={
+                      trackerData.due_date
+                        ? new Date(trackerData.due_date)
+                        : trackerData.start_date
+                        ? new Date(trackerData.start_date)
+                        : undefined
+                    }
                   />
                 </div>
               </motion.div>
@@ -533,12 +559,13 @@ const DatePicker = ({
   title,
   onValueChange,
   disabled = false,
+  ...props
 }: {
   id: string;
   title?: string;
   onValueChange: (date: Date | undefined) => void;
   disabled?: boolean;
-}) => {
+} & CalendarProps) => {
   const [date, setDate] = useState<Date>();
 
   useEffect(() => {
@@ -567,7 +594,8 @@ const DatePicker = ({
         {/* Original version is 8.10.1 */}
         <Calendar
           fixedWeeks
-          disabled={disabled}
+          {...props}
+          startMonth={new Date()}
           mode="single"
           selected={date}
           onSelect={setDate}

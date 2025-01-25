@@ -40,10 +40,17 @@ export const datefmt = (date: Date | string) => {
     year: "numeric",
   }).format(_date);
 
+  const addOneDay = () => {
+    const tmp_date = new Date(_date);
+    const _addOneDay = tmp_date.setDate(tmp_date.getDate() + 1);
+    return new Date(_addOneDay);
+  };
+
   return {
     standardLong,
     standardShort,
     standardNumeric,
+    addOneDay,
   };
 };
 
