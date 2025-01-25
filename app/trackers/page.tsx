@@ -12,7 +12,7 @@ import { useTheme } from "next-themes";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { AnimatePresence, cubicBezier, motion } from "motion/react";
 
-export default function PocketPage() {
+export default function TrackersPage() {
   const { user } = useAuthPersist();
   const { trackers, isTrackerEmpty, loading } = useTrackerPersist();
 
@@ -21,7 +21,7 @@ export default function PocketPage() {
       className="p-[inherit] min-h-screen h-[inherit] bg-accent overflow-y-auto"
       vaul-drawer-wrapper=""
     >
-      <TitleHeader title="Pocket" className="bg-accent/30 backdrop-blur-md" />
+      <TitleHeader title="Trackers" className="bg-accent/30 backdrop-blur-md" />
       <Main className="flex flex-col">
         {!isTrackerEmpty && <Trackers trackers={trackers} />}
         <AddTracker

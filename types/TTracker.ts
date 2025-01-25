@@ -1,4 +1,4 @@
-import { TTrackerColors } from "@/app/pocket/_types/TTrackerColors";
+import { TTrackerColors } from "@/app/trackers/_types/TTrackerColors";
 import { IconName } from "lucide-react/dynamic";
 import { TTrackerExtension } from "./TTrackerExtend";
 import { TTrackerTransaction } from "./TTrackerTransaction";

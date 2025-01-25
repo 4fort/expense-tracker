@@ -20,8 +20,8 @@ const navLinks = [
   },
   {
     icon: "wallet-cards",
-    text: "Pocket",
-    href: "/pocket",
+    text: "Trackers",
+    href: "/trackers",
   },
   {
     icon: "user-2",

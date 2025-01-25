@@ -1,7 +1,7 @@
 "use server";
 
 import { TTracker } from "@/types/TTracker";
-import { TTrackerExtend, TTrackerExtension } from "@/types/TTrackerExtend";
+import { TTrackerExtension } from "@/types/TTrackerExtend";
 import { TTrackerTransaction } from "@/types/TTrackerTransaction";
 import { createClient } from "@/utils/supabase/server";
 
