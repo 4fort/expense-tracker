@@ -101,9 +101,12 @@ export async function addTracker(
 
   const { data: latest_transaction_data } = await supabase
     .from("tracker_transactions")
-    .select("amount, created_at")
+    .select("amount, type, created_at")
     .order("created_at", { ascending: false })
+    .eq("tracker_id", tracker_id)
     .single();
+
+  console.log(latest_transaction_data);
 
   if (!formData.get("due_date")) {
     const data: TTracker = {
