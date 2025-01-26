@@ -19,7 +19,10 @@ export default function ProfilePage() {
   const { user } = useAuthPersist();
 
   return (
-    <div className="p-[inherit] h-[inherit] bg-accent overflow-y-auto">
+    <div
+      className="p-[inherit] min-h-screen h-[inherit] bg-accent overflow-y-auto"
+      vaul-drawer-wrapper=""
+    >
       {!user && <Loading />}
       <TitleHeader title="Profile" className="bg-accent/30 backdrop-blur-md" />
       <Main className="flex flex-col gap-8">

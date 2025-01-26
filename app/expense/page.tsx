@@ -14,7 +14,7 @@ export default function ExpensePage() {
 
   return (
     <div
-      className="p-[inherit] h-[inherit] bg-accent overflow-y-auto"
+      className="p-[inherit] min-h-screen h-[inherit] bg-accent overflow-y-auto"
       vaul-drawer-wrapper=""
     >
       <TitleHeader title="Expense" className="bg-accent/30 backdrop-blur-md" />

@@ -12,12 +12,15 @@ export default function HomePage() {
   const { user } = useAuthPersist();
 
   return (
-    <React.Fragment>
+    <div
+      className="p-[inherit] min-h-screen h-[inherit] bg-accent overflow-y-auto"
+      vaul-drawer-wrapper=""
+    >
       {user ? <Header user={user} /> : <HeaderSkeleton />}
-      <Main>
+      <Main vaul-drawer-wrapper="">
         <h1>Hello World, Home</h1>
       </Main>
-    </React.Fragment>
+    </div>
   );
 }
 

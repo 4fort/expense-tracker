@@ -6,27 +6,38 @@ import { usePathname } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
+import QuickAddExpense from "./nav/quick-add-expense";
 
 const navLinks = [
   {
     icon: "home",
     text: "Home",
     href: "/",
+    type: "link",
   },
   {
     icon: "table-properties",
     text: "Expenses",
     href: "/expense",
+    type: "link",
+  },
+  {
+    icon: "plus",
+    text: "Quick Add",
+    href: "#",
+    type: "button",
   },
   {
     icon: "wallet-cards",
     text: "Trackers",
     href: "/trackers",
+    type: "link",
   },
   {
     icon: "user-2",
     text: "Profile",
     href: "/profile",
+    type: "link",
   },
 ];
 
@@ -99,12 +110,13 @@ const NavLinks = () => {
         animate={{ ...geometry }}
         className="absolute h-full w-32 rounded-full bg-primary-foreground -z-10"
       />
-      {navLinks.map(({ icon, text, href }, i) => (
+      {navLinks.map(({ icon, text, href, type }, i) => (
         <NavSingleLink
           key={i}
           icon={icon}
           text={text}
           href={href}
+          type={type}
           setGeometry={setGeometry}
         />
       ))}
@@ -116,12 +128,17 @@ const NavSingleLink = ({
   icon,
   text,
   href,
+  type,
   setGeometry,
 }: (typeof navLinks)[0] & {
   setGeometry: React.Dispatch<
     React.SetStateAction<{ left: number; width: number }>
   >;
 }) => {
+  if (type === "button") {
+    return <QuickAddExpense icon={icon as IconName} />;
+  }
+
   const pathname = usePathname();
   const element = useRef<HTMLLIElement>(null);
   const isActive = pathname === href;
