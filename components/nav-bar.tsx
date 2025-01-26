@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
-import QuickAddExpense from "./nav/quick-add-expense";
+import QuickAddExpense from "../app/expense/_components/quick-add-expense";
 
 const navLinks = [
   {
