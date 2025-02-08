@@ -94,4 +94,65 @@ const LabelInput = React.forwardRef<
 
 LabelInput.displayName = "LabelInput";
 
+const LabelTextArea = React.forwardRef<
+  HTMLTextAreaElement,
+  React.ComponentPropsWithoutRef<"textarea"> & {
+    label: string;
+    labelClassName?: string;
+    error?: boolean;
+    errorMessage?: string;
+  }
+>(
+  (
+    {
+      className,
+      name,
+      label,
+      labelClassName,
+      error = false,
+      errorMessage,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <div className="flex flex-col relative text-smS">
+        <div className="absolute left-0 top-0 ps-4 pt-1.5 w-full rounded-t-sm bg-input z-10">
+          <LabelPrimitive.Root
+            className={cn(
+              "text-xs font-semibold",
+              error && "text-destructive",
+              labelClassName
+            )}
+            htmlFor={name}
+          >
+            {label}
+          </LabelPrimitive.Root>
+        </div>
+        <textarea
+          id={name}
+          name={name}
+          ref={ref}
+          className={cn(
+            "pt-6 pb-2 bg-input rounded-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm transition-all",
+            "pl-4 pr-4",
+            error && "ring ring-destructive",
+            className
+          )}
+          {...props}
+        />
+        {error && (
+          <p className="text-sm text-destructive  rounded-sm mt-2">
+            {errorMessage}
+          </p>
+        )}
+      </div>
+    );
+  }
+);
+
+LabelTextArea.displayName = "LabelTextArea";
+
+export { LabelInput, LabelTextArea };
+
 export default LabelInput;

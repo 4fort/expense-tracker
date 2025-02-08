@@ -1,7 +1,7 @@
 "use server";
 
 import { TTracker } from "@/types/TTracker";
-import { TTrackerExtension } from "@/types/TTrackerExtend";
+import { TTrackerExtension } from "@/types/TTrackerExtension";
 import { TTrackerTransaction } from "@/types/TTrackerTransaction";
 import { createClient } from "@/utils/supabase/server";
 
@@ -25,15 +25,24 @@ export default async function getUserTrackers() {
       tracker_transactions(*)
     `
     )
-    .eq("user_id", user_id);
+    .eq("user_id", user_id)
+    .order("created_at", { ascending: false });
 
-  console.log(data);
+  // console.log(data);
 
   const trackers: TTracker[] = data!.map((tracker: TTracker) => {
-    const amount = tracker.tracker_transactions.reduce(
-      (sum, transaction) => sum + transaction.amount,
-      0
-    );
+    // const amount = tracker.tracker_transactions.reduce(
+    //   (sum, transaction) => sum + transaction.amount,
+    //   0
+    // );
+
+    const amount = tracker.tracker_transactions.reduce((sum, transaction) => {
+      if (transaction.type === "expense") return sum - transaction.amount;
+      else {
+        return sum + transaction.amount;
+      }
+    }, 0);
+
     const latest_transaction_data =
       tracker.tracker_transactions[tracker.tracker_transactions.length - 1];
     return {

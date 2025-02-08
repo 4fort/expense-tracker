@@ -12,11 +12,14 @@ export default function useTrackerPersist() {
     retrieveTrackerData,
     revalidateTrackerData,
     addOneTracker,
+    getOneTracker,
   } = useTrackerStore();
 
   useEffect(() => {
-    revalidateTrackerData();
-    console.log("Revalidated tracker data");
+    if (trackers.length === 0) {
+      revalidateTrackerData();
+      console.log("Revalidated tracker data");
+    }
   }, []);
 
   const cacheOneTracker = (data: TTracker) => {
@@ -30,5 +33,6 @@ export default function useTrackerPersist() {
     loading,
     retrieveTrackerData,
     cacheOneTracker,
+    getOneTracker,
   };
 }

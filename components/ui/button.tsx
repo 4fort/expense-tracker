@@ -71,6 +71,6 @@ const MotionButtonBase = React.forwardRef<HTMLButtonElement, ButtonProps>(
   }
 );
 MotionButtonBase.displayName = "MotionButtonBase";
-const MotionButton = motion(MotionButtonBase);
+const MotionButton = motion.create(MotionButtonBase);
 
 export { Button, buttonVariants, MotionButton };

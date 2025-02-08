@@ -4,23 +4,17 @@ import { createClient } from "@/utils/supabase/server";
 import { ITrackerData } from "./_types/ITrackerData";
 import { TTrackerColors } from "./_types/TTrackerColors";
 import { IconName } from "lucide-react/dynamic";
-import { TTrackerExtend, TTrackerExtension } from "@/types/TTrackerExtend";
+import { TTrackerExtension } from "@/types/TTrackerExtension";
 import { revalidatePath } from "next/cache";
 import { TTracker } from "@/types/TTracker";
 import { TTrackerTransaction } from "@/types/TTrackerTransaction";
+import { DBEntryTrackerTransaction } from "@/types/DBEntryTrackerTransaction";
 
 interface DBEntryTracker {
   user_id: string;
   name: string;
   color: TTrackerColors;
   icon: IconName;
-}
-
-interface DBEntryTrackerTransaction {
-  tracker_id: number;
-  amount: number;
-  description: string;
-  type: "initial" | "income" | "expense";
 }
 
 interface DBEntryExtendedTracker {
@@ -33,10 +27,10 @@ interface DBEntryExtendedTracker {
 export async function addTracker(
   currentState: {
     error: string[];
-    data: TTrackerExtend | ITrackerData | null;
+    data: TTracker | ITrackerData | null;
   },
   formData: FormData
-): Promise<{ error: string[]; data: TTrackerExtend | ITrackerData | null }> {
+): Promise<{ error: string[]; data: TTracker | ITrackerData | null }> {
   const supabase = await createClient();
 
   const { data: user_data, error: user_error } = await supabase.auth.getUser();

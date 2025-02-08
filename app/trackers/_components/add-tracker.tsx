@@ -3,11 +3,8 @@
 import { MotionButton } from "@/components/ui/button";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import { Plus, TriangleAlert } from "lucide-react";
-import React, { useActionState, useEffect, useState } from "react";
-import { addTracker } from "../actions";
+import React, { useState } from "react";
 import { ITrackerData } from "../_types/ITrackerData";
-import useTrackerPersist from "@/hooks/useTrackerPersist";
-import { TTrackerExtend } from "@/types/TTrackerExtend";
 import AddTrackerContent from "./add-tracker-content";
 
 type Props = {
@@ -52,12 +49,12 @@ const AddTracker = ({ isTrackerEmpty, isFreeUser, loading }: Props) => {
       <DrawerTrigger asChild>
         {loading ? (
           <button disabled className="grid grid-cols-1 gap-4">
-            {[0, 1, 2, 3, 4]
+            {[0, 1, 2]
               .map((_, index) => (
                 <div
                   key={index}
                   className="w-full max-w-96 h-52 bg-muted-foreground/20 rounded-md animate-pulse"
-                  style={{ opacity: index - 0.7 }}
+                  style={{ opacity: index / 3 }}
                 />
               ))
               .reverse()}

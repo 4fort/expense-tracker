@@ -1,16 +1,16 @@
 import getUserTrackers from "@/lib/supabase/getUserTrackers";
 import { TTracker } from "@/types/TTracker";
-import { TTrackerExtend } from "@/types/TTrackerExtend";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 interface IUseTrackerStore {
   loading: boolean;
   error: string | string[] | null;
-  trackers: TTracker[] | TTrackerExtend[];
+  trackers: TTracker[];
   retrieveTrackerData: () => void;
   revalidateTrackerData: () => void;
   addOneTracker: (data: TTracker) => void;
+  getOneTracker: (id: number | null) => TTracker | undefined;
 }
 
 export const useTrackerStore = create<IUseTrackerStore>()(
@@ -52,6 +52,9 @@ export const useTrackerStore = create<IUseTrackerStore>()(
         set((state) => ({
           trackers: [...state.trackers, data],
         }));
+      },
+      getOneTracker: (id) => {
+        return get().trackers.find((tracker) => tracker.id === id);
       },
     }),
     {

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
-import QuickAddExpense from "../app/expense/_components/quick-add-expense";
+import QuickAddTransaction from "../app/transactions/_components/quick-add-transaction";
 
 const navLinks = [
   {
@@ -17,8 +17,8 @@ const navLinks = [
   },
   {
     icon: "table-properties",
-    text: "Expenses",
-    href: "/expense",
+    text: "Transactions",
+    href: "/transactions",
     type: "link",
   },
   {
@@ -135,13 +135,8 @@ const NavSingleLink = ({
     React.SetStateAction<{ left: number; width: number }>
   >;
 }) => {
-  if (type === "button") {
-    return <QuickAddExpense icon={icon as IconName} />;
-  }
-
   const pathname = usePathname();
   const element = useRef<HTMLLIElement>(null);
-  const isActive = pathname === href;
 
   useEffect(() => {
     if (pathname.startsWith(href) && element.current) {
@@ -154,15 +149,21 @@ const NavSingleLink = ({
     }
   }, [pathname]);
 
+  if (type === "button") {
+    return <QuickAddTransaction />;
+  }
+
+  const isActive = pathname === href;
+
   return (
     <motion.li
       ref={element}
-      className="flex flex-col items-center justify-center flex-grow py-1 active:scale-90 transition-all origin-center"
+      className="flex flex-col items-center justify-center flex-grow py-1 active:scale-90 transition-all origin-center max-w-[calc(100%/5)]"
     >
       <Link
         href={href}
         className={cn(
-          "flex flex-col items-center justify-center w-10/12",
+          "flex flex-col items-center justify-center",
           isActive ? "text-zinc-900" : ""
         )}
       >
@@ -170,7 +171,7 @@ const NavSingleLink = ({
           name={icon as IconName}
           className={cn(isActive && "text-foreground")}
         />
-        <span className={cn("text-xs", isActive && "text-foreground")}>
+        <span className={cn("text-[0.6rem]", isActive && "text-foreground")}>
           {text}
         </span>
       </Link>

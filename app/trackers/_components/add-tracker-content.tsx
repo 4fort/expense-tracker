@@ -26,7 +26,6 @@ import { AnimatedDiv } from "@/components/motion-div";
 import { ITrackerData } from "../_types/ITrackerData";
 import useTrackerPersist from "@/hooks/useTrackerPersist";
 import { addTracker } from "../actions";
-import { TTrackerExtend } from "@/types/TTrackerExtend";
 import {
   Dialog,
   DialogClose,
@@ -37,6 +36,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { colorList, iconCategories, iconList } from "./data";
+import { TTracker } from "@/types/TTracker";
 
 type AddTrackerContentProps = {
   trackerData: ITrackerData;
@@ -56,7 +56,7 @@ const AddTrackerContent = ({
   setIsNameValid,
   isAmountValid,
   setIsAmountValid,
-  isOpen,
+  // isOpen,
   setIsOpen,
 }: AddTrackerContentProps) => {
   const handleSubmit = async () => {
@@ -113,7 +113,7 @@ const AddTrackerContent = ({
       console.log(state);
 
       if (state.error.length <= 0) {
-        cacheOneTracker(state.data as TTrackerExtend);
+        cacheOneTracker(state.data as TTracker);
         setIsOpen(false);
       }
     }
@@ -121,7 +121,7 @@ const AddTrackerContent = ({
 
   return (
     <DrawerContent
-      className="min-h-[95vh] h-[97vh] max-h-[97vh] bg-accent"
+      className="min-h-[95vh] h-[calc(100%-3vh)] max-h-[97vh] bg-accent"
       barClassName="bg-muted-foreground/10"
     >
       <DrawerHeader className="relative none p-1 before:content-[''] before:w-full before:h-4 before:bg-gradient-to-b before:from-accent before:via-70% before:to-transparent before:absolute before:-bottom-4 before:left-0 before:z-10">
@@ -811,7 +811,7 @@ const ColorIconPickerDrawer = memo(
         </DrawerTrigger>
         <DrawerContent
           id={id}
-          className="min-h-[90vh] h-[95vh] max-h-[95vh] bg-accent"
+          className="min-h-[90vh] h-[calc(100%-5vh)] max-h-[95vh] bg-accent"
           barClassName="bg-muted-foreground/10"
         >
           <DrawerHeader className="relative">
